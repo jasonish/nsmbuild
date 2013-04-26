@@ -7,7 +7,9 @@ SOURCE :=	http://www.openinfosecfoundation.org/download/$(NAME)-$(VERSION).tar.g
 DEPENDS :=	jansson \
 		luajit
 
-OPTIONS :=	+nfqueue
+OPTIONS :=	+nfqueue \
+		+profiling \
+		+debug
 
 # System dependencies: 
 # pcre-devel

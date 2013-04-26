@@ -28,13 +28,23 @@ configure() {
 	    ;;
     esac
 
-    for opt in "${OPTS}"; do
-	case "${opt}" in
-	    +nfqueue)
-		ARGS="${ARGS} --enable-nfqueue"
-		;;
-	esac
-    done
+    # Might be easier to do this in the Makefile.
+    if [ "${OPTS}" ]; then
+	for opt in ${OPTS}; do
+	    echo "Configuring for option ${opt}."
+	    case "${opt}" in
+		+nfqueue)
+		    ARGS="${ARGS} --enable-nfqueue"
+		    ;;
+		+profiling)
+		    ARGS="${ARGS} --enable-profiling"
+		    ;;
+		+debug)
+		    ARGS="${ARGS} --enable-debug"
+		    ;;
+	    esac
+	done
+    fi
     
     LDFLAGS="${LDFLAGS}" ./configure ${ARGS}
 }

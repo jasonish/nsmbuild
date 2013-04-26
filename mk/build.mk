@@ -37,9 +37,9 @@ EXPORTS =	CURDIR=$(CURDIR) \
 		PACKAGEROOT=$(PACKAGEROOT) \
 		PREFIX=$(PREFIX) \
 		WRKINST=$(WRKINST) \
-		CPPFLAGS=$(CPPFLAGS) \
-		LDFLAGS=$(LDFLAGS) \
-		OPTS=$(OPTS) \
+		CPPFLAGS="$(CPPFLAGS)" \
+		LDFLAGS="$(LDFLAGS)" \
+		OPTS="$(OPTS)" \
 		UNAME_SYSTEM=$(UNAME_SYSTEM)
 
 # Prevent make from trying to generate a file named build from build.sh.
