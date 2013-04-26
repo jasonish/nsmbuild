@@ -80,7 +80,7 @@ $(WRKSRC): $(DISTDIR)/$(SOURCE_FILE)
 
 extract: $(WRKSRC)
 
-$(WRKDIR)/patch_done: $(WRKSRC)
+$(WRKDIR)/patch_done:
 	@if test -d patches; then \
 		for p in patches/*; do \
 	 		echo "Applying patch $$p."; \
@@ -89,10 +89,9 @@ $(WRKDIR)/patch_done: $(WRKSRC)
 	fi
 	@touch $@
 
-patch: $(WRKDIR)/patch_done
+patch: extract $(WRKDIR)/patch_done
 
-#$(WRKDIR)/configure_done: $(WRKSRC)
-$(WRKDIR)/configure_done: $(WRKDIR)/patch_done
+$(WRKDIR)/configure_done:
 	cd $(WRKSRC); $(EXPORTS) /bin/sh $(MKPATH)/build.sh configure
 ifdef OPTS
 	@echo "Caching OPTS to ./options."
@@ -102,14 +101,14 @@ else
 endif
 	@touch $@
 
-configure: $(WRKDIR)/configure_done
+configure: patch $(WRKDIR)/configure_done
 
-$(WRKDIR)/build_done: $(WRKDIR)/configure_done
+$(WRKDIR)/build_done:
 	@echo "Building $(NAME)..."
 	@cd $(WRKSRC); $(EXPORTS) /bin/sh $(MKPATH)/build.sh build
 	@touch $@
 
-build: install-deps $(WRKDIR)/build_done
+build: install-deps configure $(WRKDIR)/build_done
 
 # This does the actual install.
 $(PREFIX): build
