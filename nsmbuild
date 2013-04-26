@@ -143,8 +143,11 @@ def main():
     # local.mk.
     progdir = os.path.dirname(sys.argv[0])
     if os.path.exists(os.path.join(progdir, "mk")):
-        nsmroot = subprocess.check_output(
-            "make -s -C %s show-root" % (progdir), shell=True).strip()
+        # Do not use subprocess.check_output here, it doesn't exist in
+        # Python 2.6 (ie: CentOS/RHEL 6).
+        nsmroot = subprocess.Popen(
+            "make -s -C %s show-root" % (progdir), shell=True,
+            stdout=subprocess.PIPE).communicate()[0].strip()
     else:
         nsmroot = os.path.dirname(progdir)
     package_root = os.path.join(nsmroot, "packages")
