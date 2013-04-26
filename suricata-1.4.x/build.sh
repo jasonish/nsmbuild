@@ -1,18 +1,16 @@
 JANSSON_VERSION=2.4
-JANSSON_ROOT=${NSMROOT}/versions/jansson/${JANSSON_VERSION}
+JANSSON_ROOT=${PACKAGEROOT}/jansson/${JANSSON_VERSION}
 JANSSON_INC=${JANNSON_ROOT}/include
 JANSSON_LIB=${JANNSON_ROOT}/lib
 
 LUAJIT_VERSION=2.0.0
-LUAJIT_ROOT=${NSMROOT}/versions/luajit/2.0.0
+LUAJIT_ROOT=${PACKAGEROOT}/luajit/2.0.0
 LUAJIT_INC=${LUAJIT_ROOT}/include/luajit-2.0
 LUAJIT_LIB=${LUAJIT_ROOT}/lib
 
 set -x
 
 configure() {
-
-    JANSSON_ROOT="${NSMROOT}/versions/jansson/2.4"
 
     ARGS="--prefix ${PREFIX}
 		--with-libjansson-includes=${JANSSON_INC}

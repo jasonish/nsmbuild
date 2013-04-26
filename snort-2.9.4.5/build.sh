@@ -1,4 +1,4 @@
-PATH=${NSMROOT}/versions/daq/${DAQ_VERSION}/bin:$PATH
+PATH=${PACKAGEROOT}/daq/${DAQ_VERSION}/bin:$PATH
 
 configure() {
     ./configure --prefix=${PREFIX}

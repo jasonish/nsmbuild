@@ -50,7 +50,7 @@ def unlink(nsmroot, package):
     # If the package name has version info in it, discard.  For
     # unlinking we are only interested in the name of the package.
     package = package.split("/")[0]
-    package_dir = os.path.join(nsmroot, "versions", package)
+    package_dir = os.path.join(package_root, package)
     if not os.path.exists(package_dir):
         print("Package %s is not installed." % (package))
         return 1
@@ -66,7 +66,7 @@ def unlink(nsmroot, package):
     # Remove all symlink into package_dir.
     for dirpath, dirnames, filenames in os.walk(nsmroot):
         if dirpath == nsmroot:
-            dirnames.remove("versions")
+            dirnames.remove(os.path.basename(package_root))
         for filename in ["%s/%s" % (dirpath, fn) for fn in filenames]:
             if os.path.islink(filename):
                 realpath = os.readlink(filename)
@@ -147,7 +147,7 @@ def main():
             "make -s -C %s show-root" % (progdir), shell=True).strip()
     else:
         nsmroot = os.path.dirname(progdir)
-    package_root = os.path.join(nsmroot, "versions")
+    package_root = os.path.join(nsmroot, "packages")
 
     if args:
         if args[0] == "link":

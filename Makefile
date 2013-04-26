@@ -15,9 +15,6 @@ clean:
 show-root:
 	@echo $(NSMROOT)
 
-show-installed:
-	@NSMROOT=$(NSMROOT) python ./mk/show-installed.py
-
 # List the available packages.
 list:
 	@for d in $(SUBDIRS); do \

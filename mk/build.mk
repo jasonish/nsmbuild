@@ -7,6 +7,9 @@ MKPATH :=	$(TOPDIR)/mk
 -include $(TOPDIR)/local.mk
 include $(MKPATH)/config.mk
 
+# Where packages are installed.
+PACKAGEROOT :=	$(NSMROOT)/packages
+
 # Where distfiles will be saved.
 DISTDIR :=	$(TOPDIR)/distfiles
 
@@ -20,7 +23,7 @@ WRKSRC ?=	$(WRKDIR)/$(NAME)-$(VERSION)
 WRKINST :=	$(WRKDIR)/fakeroot
 
 # Prefix for the package to use (ie: --prefix).
-PREFIX =	$(NSMROOT)/versions/$(NAME)/$(VERSION)-$(REV)
+PREFIX =	$(PACKAGEROOT)/$(NAME)/$(VERSION)-$(REV)
 
 # Gather some configuration info.
 UNAME_SYSTEM :=	$(shell uname -s)
@@ -31,6 +34,7 @@ SOURCE_FILE ?=	$(notdir $(SOURCE))
 # Variables that will be export to child processes.
 EXPORTS =	CURDIR=$(CURDIR) \
 		NSMROOT=$(NSMROOT) \
+		PACKAGEROOT=$(PACKAGEROOT) \
 		PREFIX=$(PREFIX) \
 		WRKINST=$(WRKINST) \
 		CPPFLAGS=$(CPPFLAGS) \

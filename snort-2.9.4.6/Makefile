@@ -9,7 +9,7 @@ DEPENDS :=	daq
 
 export DAQ_VERSION = 2.0.0
 
-CPPFLAGS +=	-I$(NSMROOT)/versions/daq/$(DAQ_VERSION)/include
+CPPFLAGS +=	-I$(PACKAGEROOT)/daq/$(DAQ_VERSION)/include
 
 # System dependendencies:
 # libdnet-devel
