@@ -1,0 +1,7 @@
+# Set the installation prefix.
+# Default: /opt/nsm
+#NSMROOT = /opt/nsm
+
+# Set the SUDO=sudo to use sudo for the install phase.
+# Not required if you have write permission to NSMROOT.
+#SUDO = sudo

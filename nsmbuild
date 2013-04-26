@@ -1,0 +1,158 @@
+#! /usr/bin/env python
+#
+# nsmbuild
+
+from __future__ import print_function
+
+import sys
+import os.path
+import subprocess
+import getopt
+
+verbose = False
+
+class PackageNotInstalledError(Exception):
+    pass
+
+def get_versions(package_name):
+    """ Return all the versions of the package that is installed. """
+    versions = []
+    for d in os.listdir(os.path.join(package_root, package_name)):
+        path = os.path.join(package_root, package_name, d)
+        if os.path.isdir(path) and not os.path.islink(path):
+            versions.append(d)
+    return versions
+
+def get_latest_version(package_name):
+    """ Given a package name, find the most recent installed
+    version. """
+
+    versions = get_versions(package_name)
+    if not versions:
+        raise PackageNotInstalledError()
+    elif len(versions) == 1:
+        return versions[0]
+
+def sudo(func):
+    """ Decorator function to re-exec this program using sudo with the
+    same arguments. """
+    def wrapper(nsmroot, *args):
+        if not os.access(nsmroot, os.W_OK):
+            return subprocess.call(["sudo"] + sys.argv)
+        else:
+            return(func(nsmroot, *args))
+    return wrapper
+
+@sudo
+def unlink(nsmroot, package):
+    """ Unlink package from nsmroot. """
+
+    # If the package name has version info in it, discard.  For
+    # unlinking we are only interested in the name of the package.
+    package = package.split("/")[0]
+    package_dir = os.path.join(nsmroot, "versions", package)
+    if not os.path.exists(package_dir):
+        print("Package %s is not installed." % (package))
+        return 1
+
+    print("Unlinking package %s." % (package))
+
+    # Track directories we unlink files from.
+    dirs = set()
+
+    # Track files unlinked.
+    unlinked = []
+
+    # Remove all symlink into package_dir.
+    for dirpath, dirnames, filenames in os.walk(nsmroot):
+        if dirpath == nsmroot:
+            dirnames.remove("versions")
+        for filename in ["%s/%s" % (dirpath, fn) for fn in filenames]:
+            if os.path.islink(filename):
+                realpath = os.readlink(filename)
+                if realpath.startswith(package_dir):
+                    if verbose:
+                        print("Unlinking file %s." % (filename))
+                    os.unlink(filename)
+                    unlinked.append(filename)
+                    dirs.add(os.path.dirname(filename))
+
+    # Prune any directories that are now empty.
+    for dir in dirs:
+        if not os.listdir(dir):
+            if verbose:
+                print("Removing directory %s." % (dir))
+            os.rmdir(dir)
+
+    print("%d files unlinked." % len(unlinked))
+
+@sudo
+def link(nsmroot, package):
+    """ Link package into nsmroot. """
+
+    try:
+        if package.find("/") == -1:
+            package = os.path.join(package, get_latest_version(package))
+        if not os.path.exists(os.path.join(package_root, package)):
+            raise PackageNotInstalledError()
+    except PackageNotInstalledError as err:
+        print("Package %s is not installed." % (package))
+        return 1
+
+    # Unlink first.
+    unlink(nsmroot, package.split("/", 1)[0])
+
+    print("Linking package %s." % (package))
+
+    # Track the files that are linked.
+    linked = []
+
+    package_dir = os.path.join(package_root, package)
+    for dirpath, dirnames, filenames in os.walk(package_dir):
+        if ".nolink" in filenames:
+            dirnames[:] = []
+            continue
+        for filename in [os.path.join(dirpath, fn) for fn in filenames]:
+            dst = os.path.join(nsmroot, filename[len(package_dir)+1:])
+            dst_dirname = os.path.dirname(dst)
+            if not os.path.exists(dst_dirname):
+                os.makedirs(dst_dirname)
+            if verbose:
+                print("Linking %s." % (dst))
+            os.symlink(filename, dst)
+            linked.append(dst)
+
+    print("%d files linked." % len(linked))
+
+def main():
+
+    global verbose
+    global nsmroot
+    global package_root
+
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "v", ["--verbose"])
+    except getopt.GetoptError as err:
+        print(err, file=sys.stderr)
+        return 1
+    for o, a in opts:
+        if o in ["-v", "--verbose"]:
+            verbose = True
+
+    # If being called from the build directory, look for NSMROOT in
+    # local.mk.
+    progdir = os.path.dirname(sys.argv[0])
+    if os.path.exists(os.path.join(progdir, "mk")):
+        nsmroot = subprocess.check_output(
+            "make -s -C %s show-root" % (progdir), shell=True).strip()
+    else:
+        nsmroot = os.path.dirname(progdir)
+    package_root = os.path.join(nsmroot, "versions")
+
+    if args:
+        if args[0] == "link":
+            link(nsmroot, args[1])
+        elif args[0] == "unlink":
+            return unlink(nsmroot, args[1])
+
+sys.exit(main())
