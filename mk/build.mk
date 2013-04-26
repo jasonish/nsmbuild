@@ -75,9 +75,24 @@ $(WRKSRC): $(DISTDIR)/$(SOURCE_FILE)
 	@cd $(WRKDIR) && python $(MKPATH)/extract.py \
 		$(addprefix $(DISTDIR)/,$(SOURCE_FILE))
 
+# Touch the new directory to make sure it newer than the source file.
+	@touch $@
+
 extract: $(WRKSRC)
 
-$(WRKDIR)/configure_done: $(WRKSRC)
+$(WRKDIR)/patch_done: $(WRKSRC)
+	@if test -d patches; then \
+		for p in patches/*; do \
+	 		echo "Applying patch $$p."; \
+	 		(cd $(WRKSRC) && patch -p1 < $(CURDIR)/$$p); \
+	 	done \
+	fi
+	@touch $@
+
+patch: $(WRKDIR)/patch_done
+
+#$(WRKDIR)/configure_done: $(WRKSRC)
+$(WRKDIR)/configure_done: $(WRKDIR)/patch_done
 	cd $(WRKSRC); $(EXPORTS) /bin/sh $(MKPATH)/build.sh configure
 ifdef OPTS
 	@echo "Caching OPTS to ./options."

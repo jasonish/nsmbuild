@@ -10,6 +10,9 @@ import subprocess
 def extract(distfile):
     if distfile.endswith(".tar.gz"):
         rc = subprocess.call(["tar", "zxf", distfile])
+    elif distfile.endswith(".tar.bz2"):
+        rc = subprocess.call(
+            "bunzip2 -c %s | tar xf -" % (distfile), shell=True)
     else:
         print("Don't know how to extract %s." % (distfile), file=sys.stderr)
         return False
