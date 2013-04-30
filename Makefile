@@ -1,6 +1,6 @@
 SUBDIRS =	$(notdir $(abspath $(dir $(wildcard */Makefile))))
 
-include mk/config.mk
+include mk/defaults.mk
 
 all:
 
@@ -10,6 +10,7 @@ clean:
 		make -s -C $$d clean; \
 	done
 	@echo "Cleaning scratch files..."
+	@rm -f mk/config.mk
 	@find . -name \*~ -print0 | xargs -0 rm -f
 
 show-root:

@@ -1,0 +1,4 @@
+UNAME_SYSTEM := Linux
+UNAME_ARCH := x86_64
+DIST_NAME := fedora
+DIST_REL := 18

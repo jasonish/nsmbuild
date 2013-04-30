@@ -1,7 +1,7 @@
 JANSSON_VERSION=2.4
 JANSSON_ROOT=${PACKAGEROOT}/jansson/${JANSSON_VERSION}
-JANSSON_INC=${JANNSON_ROOT}/include
-JANSSON_LIB=${JANNSON_ROOT}/lib
+JANSSON_INC=${JANSSON_ROOT}/include
+JANSSON_LIB=${JANSSON_ROOT}/lib
 
 LUAJIT_VERSION=2.0.0
 LUAJIT_ROOT=${PACKAGEROOT}/luajit/2.0.0
@@ -12,12 +12,13 @@ set -x
 
 configure() {
 
-    ARGS="--prefix ${PREFIX}
+    ARGS="--prefix=${PREFIX}
 		--with-libjansson-includes=${JANSSON_INC}
 		--with-libjansson-libraries=${JANSSON_LIB}
 		--enable-luajit
 		--with-libluajit-includes=${LUAJIT_INC}
-		--with-libluajit-libraries=${LUAJIT_LIB}"
+		--with-libluajit-libraries=${LUAJIT_LIB}
+		${CONFIGURE_ARGS}"
 
     # Platform specific configuration arguments.
     case "${UNAME_SYSTEM}" in
@@ -33,9 +34,6 @@ configure() {
 	for opt in ${OPTS}; do
 	    echo "Configuring for option ${opt}."
 	    case "${opt}" in
-		+nfqueue)
-		    ARGS="${ARGS} --enable-nfqueue"
-		    ;;
 		+profiling)
 		    ARGS="${ARGS} --enable-profiling"
 		    ;;
@@ -45,7 +43,7 @@ configure() {
 	    esac
 	done
     fi
-    
+
     LDFLAGS="${LDFLAGS}" ./configure ${ARGS}
 }
 

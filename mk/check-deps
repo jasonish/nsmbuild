@@ -1,0 +1,30 @@
+#! /bin/sh
+#
+# Script to check for dependencies that should be provided by the
+# system.
+
+# Check for the existence of packages using rpm.
+check_rpm() {
+    missing=""
+    for dep in $@; do
+	echo -n "Checking for $dep: "
+	if ! rpm -q $dep; then
+	    missing="${missing} $dep"
+	fi
+    done
+
+    if [[ "${missing}" ]]; then
+	echo "Please install the following packages then try again:"
+	echo "   ${missing}"
+	exit 1
+    fi
+}
+
+case ${DIST_NAME} in
+    centos|redhat|fedora)
+	check_rpm $@
+	;;
+    *)
+	echo "WARNING: Unable to check system dependencies on this platform: ${DIST_NAME}"
+	;;
+esac

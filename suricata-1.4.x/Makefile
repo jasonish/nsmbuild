@@ -4,18 +4,32 @@ REV :=		1
 
 SOURCE :=	http://www.openinfosecfoundation.org/download/$(NAME)-$(VERSION).tar.gz
 
-DEPENDS :=	jansson \
+include ../mk/build.mk
+
+DEPENDS =	jansson \
 		luajit
 
-OPTIONS :=	+nfqueue \
+ifneq ($(filter fedora redhat centos,$(DIST_NAME)),)
+SYS_DEPENDS +=	pcre-devel \
+		libyaml-devel \
+		file-devel \
+		zlib-devel
+endif
+
+OPTIONS =	+nfqueue \
 		+profiling \
 		+debug
 
-# System dependencies: 
-# pcre-devel
-# libyaml-devel
-# file-devel (magic.h)
-# zlib-devel
+ifneq ($(filter redhat centos,$(DIST_NAME)),)
+ifeq ($(filter +nfqueue,$(OPTS)),+nfqueue)
+DEPENDS +=	libnetfilter_queue
+CONFIGURE_ARGS+=--with-libnetfilter_queue-includes=$(PACKAGEROOT)/libnetfilter_queue/1.0.0/include
+CONFIGURE_ARGS+=--with-libnetfilter_queue-libraries=$(PACKAGEROOT)/libnetfilter_queue/1.0.0/lib
+endif
+endif
 
-include ../mk/build.mk
+ifeq ($(filter +nfqueue,$(OPTS)),+nfqueue)
+CONFIGURE_ARGS+=--enable-nfqueue
+endif
 
+export CONFIGURE_ARGS

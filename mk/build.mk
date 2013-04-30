@@ -1,11 +1,20 @@
 # Figure out where we live.
 TOPDIR :=	$(realpath $(dir $(word 2,$(MAKEFILE_LIST)))..)
+NSMBUILDROOT :=	$(TOPDIR)
 
 # Directory where the build infrastructure makefiles and scripts live.
 MKPATH :=	$(TOPDIR)/mk
 
+# Pull in default settings that can be overridden by user settings.
+include $(MKPATH)/defaults.mk
+
+# Pull in configuration parameters that are dynamically created by a
+# script.  Do this before pulling in local settings just in case they
+# need to be overrided.
+-include $(MKPATH)/config.mk
+
+# Now pull in user overrides.
 -include $(TOPDIR)/local.mk
-include $(MKPATH)/config.mk
 
 # Where packages are installed.
 PACKAGEROOT :=	$(NSMROOT)/packages
@@ -34,21 +43,42 @@ SOURCE_FILE ?=	$(notdir $(SOURCE))
 # Variables that will be export to child processes.
 EXPORTS =	CURDIR=$(CURDIR) \
 		NSMROOT=$(NSMROOT) \
+		NSMBUILDROOT=$(NSMBUILDROOT) \
 		PACKAGEROOT=$(PACKAGEROOT) \
 		PREFIX=$(PREFIX) \
 		WRKINST=$(WRKINST) \
-		CPPFLAGS="$(CPPFLAGS)" \
-		LDFLAGS="$(LDFLAGS)" \
 		OPTS="$(OPTS)" \
 		UNAME_SYSTEM=$(UNAME_SYSTEM)
+EXPORTS +=	DIST_NAME=$(DIST_NAME)
+EXPORTS +=	DIST_REL=$(DIST_REL)
+EXPORTS +=	CPPFLAGS=$(CPPFLAGS)
+EXPORTS +=	LDFLAGS=$(LDFLAGS)
 
 # Prevent make from trying to generate a file named build from build.sh.
-.PHONY:		build
+.PHONY:		build $(MKPATH)/config.mk
 
 -include options
 
 # By default we'll just build, but not install the package.
 all: build
+
+$(MKPATH)/config.mk:
+	@/bin/sh $(MKPATH)/config.sh > $@
+
+info:
+	@echo "Name:     $(NAME)"
+	@echo "Version:  $(VERSION)"
+	@echo "Revision: $(REV)"
+	@echo "Options: $(OPTIONS)"
+	@echo "NSM Dependencies: $(DEPENDS)"
+	@echo "System Dependencies: $(SYS_DEPENDS)"
+
+check-deps:
+ifdef SKIP_SYS_DEPS
+	@echo "Skipping system dependency check."
+else
+	@$(EXPORTS) /bin/sh $(MKPATH)/check-deps $(SYS_DEPENDS)
+endif
 
 # Target to install dependencies.
 install-deps:
@@ -108,7 +138,7 @@ $(WRKDIR)/build_done:
 	@cd $(WRKSRC); $(EXPORTS) /bin/sh $(MKPATH)/build.sh build
 	@touch $@
 
-build: install-deps configure $(WRKDIR)/build_done
+build: check-deps install-deps configure $(WRKDIR)/build_done
 
 # This does the actual install.
 $(PREFIX): build

@@ -1,5 +1,5 @@
 configure() {
-    mkdir m4
+    mkdir -p m4
     autoreconf -ivf
     ./configure --prefix=${PREFIX}
 }
