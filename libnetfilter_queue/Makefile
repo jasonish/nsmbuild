@@ -4,11 +4,12 @@ REV =		1
 
 SOURCE =	http://netfilter.org/projects/${NAME}/files/${NAME}-${VERSION}.tar.bz2
 
-# System depends:
-# libnfnetlink-devel
-# kernel-headers
-# autoconf
-# automake
-# libtool
-
 include ../mk/build.mk
+
+ifeq ($(call is_dist,redhat centos fedora),yes)
+SYS_DEPENDS +=	libnfnetlink-devel \
+		kernel-headers \
+		autoconf \
+		automake \
+		libtool
+endif

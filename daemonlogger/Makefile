@@ -5,8 +5,9 @@ REV :=		1
 SOURCE :=	http://www.snort.org/downloads/463
 SOURCE_FILE :=	$(NAME)-$(VERSION).tar.gz
 
-# System dependencies:
-# libpcap-devel
-# libdnet-devel
-
 include ../mk/build.mk
+
+ifeq ($(call is_dist,centos redhat fedora),yes)
+SYS_DEPENDS +=	libpcap-devel \
+		libdnet-devel
+endif

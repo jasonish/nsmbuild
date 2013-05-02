@@ -1,5 +1,3 @@
-PATH=${PACKAGEROOT}/daq/${DAQ_VERSION}/bin:$PATH
-
 configure() {
     ./configure --prefix=${PREFIX}
 }

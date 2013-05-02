@@ -1,50 +1,7 @@
-JANSSON_VERSION=2.4
-JANSSON_ROOT=${PACKAGEROOT}/jansson/${JANSSON_VERSION}
-JANSSON_INC=${JANSSON_ROOT}/include
-JANSSON_LIB=${JANSSON_ROOT}/lib
-
-LUAJIT_VERSION=2.0.0
-LUAJIT_ROOT=${PACKAGEROOT}/luajit/2.0.0
-LUAJIT_INC=${LUAJIT_ROOT}/include/luajit-2.0
-LUAJIT_LIB=${LUAJIT_ROOT}/lib
-
 set -x
 
 configure() {
-
-    ARGS="--prefix=${PREFIX}
-		--with-libjansson-includes=${JANSSON_INC}
-		--with-libjansson-libraries=${JANSSON_LIB}
-		--enable-luajit
-		--with-libluajit-includes=${LUAJIT_INC}
-		--with-libluajit-libraries=${LUAJIT_LIB}
-		${CONFIGURE_ARGS}"
-
-    # Platform specific configuration arguments.
-    case "${UNAME_SYSTEM}" in
-	Linux)
-	    ARGS="${ARGS} --enable-af-packet"
-	    LDFLAGS="${LDFLAGS} -Wl,-rpath -Wl,${PREFIX}/lib"
-	    LDFLAGS="${LDFLAGS} -Wl,-rpath -Wl,${LUAJIT_LIB}"
-	    ;;
-    esac
-
-    # Might be easier to do this in the Makefile.
-    if [ "${OPTS}" ]; then
-	for opt in ${OPTS}; do
-	    echo "Configuring for option ${opt}."
-	    case "${opt}" in
-		+profiling)
-		    ARGS="${ARGS} --enable-profiling"
-		    ;;
-		+debug)
-		    ARGS="${ARGS} --enable-debug"
-		    ;;
-	    esac
-	done
-    fi
-
-    LDFLAGS="${LDFLAGS}" ./configure ${ARGS}
+    ./configure ${CONFIGURE_ARGS}
 }
 
 build() {

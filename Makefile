@@ -6,10 +6,10 @@ all:
 
 clean:
 	@for d in $(SUBDIRS); do \
-		make -s -C $$d clean; \
+		make -C $$d clean || exit 1; \
 	done
 	@echo "Cleaning scratch files..."
-	@rm -f mk/config.mk
+	@rm -f .config-* mk/config-*
 	@find . -name \*~ -print0 | xargs -0 rm -f
 
 show-root:

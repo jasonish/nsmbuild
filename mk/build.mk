@@ -8,10 +8,15 @@ MKPATH :=	$(TOPDIR)/mk
 # Pull in default settings that can be overridden by user settings.
 include $(MKPATH)/defaults.mk
 
+# Some string to uniquely identify this host.  Used to create files
+# containing machine specific information.
+HOST_ID :=	$(shell hostname)-$(shell uname -s)-$(shell uname -m)
+
 # Pull in configuration parameters that are dynamically created by a
 # script.  Do this before pulling in local settings just in case they
 # need to be overrided.
--include $(MKPATH)/config.mk
+CONFIG_MK :=	$(TOPDIR)/.config-$(HOST_ID)
+-include $(CONFIG_MK)
 
 # Now pull in user overrides.
 -include $(TOPDIR)/local.mk
@@ -48,21 +53,32 @@ EXPORTS =	CURDIR=$(CURDIR) \
 		UNAME_SYSTEM=$(UNAME_SYSTEM)
 EXPORTS +=	DIST_NAME=$(DIST_NAME)
 EXPORTS +=	DIST_REL=$(DIST_REL)
-EXPORTS +=	CPPFLAGS=$(CPPFLAGS)
-EXPORTS +=	LDFLAGS=$(LDFLAGS)
-
+EXPORTS +=	CPPFLAGS="$(CPPFLAGS)"
+EXPORTS +=	LDFLAGS="$(LDFLAGS)"
 EXPORTS +=	CONFIGURE_ARGS="$(CONFIGURE_ARGS)"
+EXPORTS +=	PATH=$(PATH)
+
+# Function for testing DIST_NAME.
+define is_dist
+$(if $(filter $(1),$(DIST_NAME)),yes,no)
+endef
+
+# Function for testing existence of an option in OPTS.
+define has_opt
+$(if $(filter $(1),$(OPTS)),yes,no)
+endef
 
 # Prevent make from trying to generate a file named build from build.sh.
-.PHONY:		build $(MKPATH)/config.mk
+.PHONY:		build
 
--include options
+-include options-$(HOST_ID)
 
 # By default we'll just build, but not install the package.
 all: build
 
-$(MKPATH)/config.mk:
-	@/bin/sh $(MKPATH)/config.sh > $@
+$(CONFIG_MK):
+	@echo "Generating $(CONFIG_MK)..."
+	@/bin/sh $(MKPATH)/config.sh > "$@"
 
 info:
 	@echo "Name:     $(NAME)"
@@ -71,6 +87,9 @@ info:
 	@echo "Options: $(OPTIONS)"
 	@echo "NSM Dependencies: $(DEPENDS)"
 	@echo "System Dependencies: $(SYS_DEPENDS)"
+	@echo ""
+	@echo "Distribution Name: $(DIST_NAME)"
+	@echo "Distribution Release: $(DIST_REL)"
 
 check-deps:
 ifdef SKIP_SYS_DEPS
@@ -95,7 +114,7 @@ $(DISTDIR)/$(SOURCE_FILE):
 fetch: $(DISTDIR)/$(SOURCE_FILE)
 
 clean:
-	@echo "Cleaning $(NAME)..."
+	@echo "Cleaning $(NAME)-$(VERSION)..."
 	@rm -rf $(CURDIR)/work
 	@rm -f *~
 
@@ -124,10 +143,10 @@ patch: extract $(WRKDIR)/patch_done
 $(WRKDIR)/configure_done:
 	@cd $(WRKSRC); $(EXPORTS) /bin/sh $(MKPATH)/build.sh configure
 ifdef OPTS
-	@echo "Caching OPTS to ./options."
-	@echo "OPTS=$(OPTS)" > $(CURDIR)/options
+	@echo "Caching OPTS to ./options-$(HOST_ID)."
+	@echo "OPTS=$(OPTS)" > $(CURDIR)/options-$(HOST_ID)
 else
-	@rm -f $(CURDIR)/options
+	@rm -f $(CURDIR)/options-$(HOST_ID)
 endif
 	@touch $@
 
@@ -135,7 +154,8 @@ configure: patch $(WRKDIR)/configure_done
 
 $(WRKDIR)/build_done:
 	@echo "Building $(NAME)..."
-	@cd $(WRKSRC); $(EXPORTS) /bin/sh $(MKPATH)/build.sh build
+	$(if $(build),$(build),\
+		cd $(WRKSRC); $(EXPORTS) /bin/sh $(MKPATH)/build.sh build)
 	@touch $@
 
 build: check-deps install-deps configure $(WRKDIR)/build_done

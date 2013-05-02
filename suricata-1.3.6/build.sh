@@ -1,22 +1,4 @@
 configure() {
-
-    CONFIGURE_ARGS="--prefix ${PREFIX}"
-
-    # Platform specific configuration arguments.
-    case "${UNAME_SYSTEM}" in
-	Linux)
-	    CONFIGURE_ARGS="${CONFIGURE_ARGS} --enable-af-packet"
-	    ;;
-    esac
-
-    for opt in "${OPTS}"; do
-	case "${opt}" in
-	    +nfqueue)
-		CONFIGURE_ARGS="${CONFIGURE_ARGS} --enable-nfqueue"
-		;;
-	esac
-    done
-
     ./configure ${CONFIGURE_ARGS}
 }
 
