@@ -34,9 +34,6 @@ WRKINST :=	$(WRKDIR)/fakeroot
 # Prefix for the package to use (ie: --prefix).
 PREFIX =	$(PACKAGEROOT)/$(NAME)/$(VERSION)-$(REV)
 
-# Gather some configuration info.
-UNAME_SYSTEM :=	$(shell uname -s)
-
 # Compute the filename of the source if not explicitly provided.
 SOURCE_FILE ?=	$(notdir $(SOURCE))
 
@@ -53,6 +50,8 @@ EXPORTS +=	DIST_NAME=$(DIST_NAME)
 EXPORTS +=	DIST_REL=$(DIST_REL)
 EXPORTS +=	CPPFLAGS=$(CPPFLAGS)
 EXPORTS +=	LDFLAGS=$(LDFLAGS)
+
+EXPORTS +=	CONFIGURE_ARGS="$(CONFIGURE_ARGS)"
 
 # Prevent make from trying to generate a file named build from build.sh.
 .PHONY:		build $(MKPATH)/config.mk
@@ -96,8 +95,9 @@ $(DISTDIR)/$(SOURCE_FILE):
 fetch: $(DISTDIR)/$(SOURCE_FILE)
 
 clean:
-	rm -rf $(CURDIR)/work
-	rm -f *~
+	@echo "Cleaning $(NAME)..."
+	@rm -rf $(CURDIR)/work
+	@rm -f *~
 
 $(WRKSRC): $(DISTDIR)/$(SOURCE_FILE)
 	@echo "Extracting $(SOURCE_FILE)..."
@@ -122,7 +122,7 @@ $(WRKDIR)/patch_done:
 patch: extract $(WRKDIR)/patch_done
 
 $(WRKDIR)/configure_done:
-	cd $(WRKSRC); $(EXPORTS) /bin/sh $(MKPATH)/build.sh configure
+	@cd $(WRKSRC); $(EXPORTS) /bin/sh $(MKPATH)/build.sh configure
 ifdef OPTS
 	@echo "Caching OPTS to ./options."
 	@echo "OPTS=$(OPTS)" > $(CURDIR)/options

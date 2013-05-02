@@ -4,10 +4,11 @@ REV =		1
 
 SOURCE =	https://pulledpork.googlecode.com/files/$(NAME)-$(VERSION).tar.gz
 
-# RedHat/CentOS/Fedora dependencies.
-EL_DEPS =	perl-libwww-perl \
-		perl-Crypt-SSLEay \
-		perl-Archive-Tar
-FEDDORA_DEPS =	$(EL_DEPS)
-
 include ../mk/build.mk
+
+# RedHat/CentOS/Fedora dependencies.
+ifneq ($(filter fedora redhat centos,$(DIST_NAME)),)
+SYS_DEPENDS +=	perl-libwww-perl \
+		perl-Crypt-SSLeay \
+		perl-Archive-Tar
+endif

@@ -6,7 +6,6 @@ all:
 
 clean:
 	@for d in $(SUBDIRS); do \
-		echo "Cleaning $$d."; \
 		make -s -C $$d clean; \
 	done
 	@echo "Cleaning scratch files..."

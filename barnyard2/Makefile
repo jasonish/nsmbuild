@@ -5,9 +5,48 @@ REV :=		1
 SOURCE :=	https://github.com/firnsy/barnyard2/archive/v2-$(VERSION).tar.gz
 SOURCE_FILE :=	$(NAME)-$(VERSION).tar.gz
 
-OPTIONS :=	+mysql \
-		+postgresql
-
 WRKSRC =	$(WRKDIR)/$(NAME)-2-$(VERSION)
 
 include ../mk/build.mk
+
+CONFIGURE_ARGS+=--prefix=$(PREFIX)
+
+# Extra configure options, may apply to more than just RedHat,CentOS,Fedora.
+ifneq ($(filter redhat centos fedora,$(DIST_NAME)),)
+CONFIGURE_ARGS+=--enable-ipv6 \
+		--enable-gre \
+		--enable-mpls
+endif
+
+OPTIONS :=	+mysql \
+		+postgresql
+
+# +mysql
+ifeq ($(filter +mysql,$(OPTS)),+mysql)
+
+  CONFIGURE_ARGS += --with-mysql
+
+  # RedHat/CentOS/Fedora
+  ifneq ($(filter redhat centos fedora,$(DIST_NAME)),)
+    SYS_DEPENDS += mysql-libs
+
+    ifeq ($(UNAME_ARCH),x86_64)
+      CONFIGURE_ARGS+=--with-mysql-libraries=/usr/lib64/mysql
+    endif
+
+  endif
+
+endif
+
+# +postgresql
+ifeq ($(filter +postgresql,$(OPTS)),+postgresql)
+
+  CONFIGURE_ARGS += --with-postgresql
+
+  # RedHat/CentOS/Fedora
+  ifneq ($(filter redhat centos fedora,$(DIST_NAME)),)
+    SYS_DEPENDS += postgresql-libs
+  endif
+
+endif
+

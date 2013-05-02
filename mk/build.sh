@@ -11,7 +11,6 @@ build() {
 }
 
 # Source in the package build script.
-echo "${CURDIR}/build.sh"
 if [ -e ${CURDIR}/build.sh ]; then
     . ${CURDIR}/build.sh
 else
