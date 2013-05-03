@@ -71,7 +71,7 @@ endef
 # Prevent make from trying to generate a file named build from build.sh.
 .PHONY:		build
 
--include options-$(HOST_ID)
+-include options
 
 # By default we'll just build, but not install the package.
 all: build
@@ -87,9 +87,6 @@ info:
 	@echo "Options: $(OPTIONS)"
 	@echo "NSM Dependencies: $(DEPENDS)"
 	@echo "System Dependencies: $(SYS_DEPENDS)"
-	@echo ""
-	@echo "Distribution Name: $(DIST_NAME)"
-	@echo "Distribution Release: $(DIST_REL)"
 
 check-deps:
 ifdef SKIP_SYS_DEPS
@@ -143,10 +140,10 @@ patch: extract $(WRKDIR)/patch_done
 $(WRKDIR)/configure_done:
 	@cd $(WRKSRC); $(EXPORTS) /bin/sh $(MKPATH)/build.sh configure
 ifdef OPTS
-	@echo "Caching OPTS to ./options-$(HOST_ID)."
-	@echo "OPTS=$(OPTS)" > $(CURDIR)/options-$(HOST_ID)
+	@echo "Caching OPTS to ./options."
+	@echo "OPTS=$(OPTS)" > $(CURDIR)/options
 else
-	@rm -f $(CURDIR)/options-$(HOST_ID)
+	@rm -f $(CURDIR)/options
 endif
 	@touch $@
 
@@ -196,3 +193,19 @@ link:
 
 print-package-name:
 	@echo $(NAME)-$(VERSION)-$(REV)
+
+help:
+	@echo "build (default)      Build the package."
+	@echo "check-deps           Check system dependencies."
+	@echo "clean                Clean up."
+	@echo "configure            Perform configure build phase."
+	@echo "extract              Perform extract build phase."
+	@echo "fetch                Perform fetch build phase."
+	@echo "help                 This information."
+	@echo "info                 Package information."
+	@echo "install              Install the package."
+	@echo "link                 Link the package into NSMROOT."
+	@echo "patch                Perform patch phase of build."
+	@echo "uninstall            Uninstall the package."
+	@echo "unlink               Unlink the package from NSMROOT."
+	@echo "                     - Package remains installed."
