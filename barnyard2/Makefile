@@ -1,5 +1,5 @@
 NAME :=		barnyard2
-VERSION :=	1.12
+VERSION :=	1.13
 REV :=		1
 
 SOURCE :=	https://github.com/firnsy/barnyard2/archive/v2-$(VERSION).tar.gz
