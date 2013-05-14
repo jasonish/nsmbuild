@@ -8,15 +8,12 @@ MKPATH :=	$(TOPDIR)/mk
 # Pull in default settings that can be overridden by user settings.
 include $(MKPATH)/defaults.mk
 
-# Some string to uniquely identify this host.  Used to create files
-# containing machine specific information.
-HOST_ID :=	$(shell hostname)-$(shell uname -s)-$(shell uname -m)
+# Pull in dynamic configuration.
+define newline
 
-# Pull in configuration parameters that are dynamically created by a
-# script.  Do this before pulling in local settings just in case they
-# need to be overrided.
-CONFIG_MK :=	$(TOPDIR)/.config-$(HOST_ID)
--include $(CONFIG_MK)
+
+endef
+$(eval $(subst #,$(newline),$(shell /bin/sh $(MKPATH)/config.sh | tr '\n' '#')))
 
 # Now pull in user overrides.
 -include $(TOPDIR)/local.mk
@@ -75,10 +72,6 @@ endef
 
 # By default we'll just build, but not install the package.
 all: build
-
-$(CONFIG_MK):
-	@echo "Generating $(CONFIG_MK)..."
-	@/bin/sh $(MKPATH)/config.sh > "$@"
 
 info:
 	@echo "Name:     $(NAME)"
