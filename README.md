@@ -12,9 +12,9 @@ binaries can be accessed directly in their prefix, or the may be
 
 ## Example: Installing Suricata-1.4.x
 
-`cd suricata-1.4.x`
-`make install`
-`make link`
+* `cd suricata-1.4.x`
+* `make install`
+* `make link`
 
 ## Setup
 
