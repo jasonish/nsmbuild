@@ -1,5 +1,5 @@
 NAME :=		suricata
-VERSION :=	1.4.1
+VERSION :=	1.4.2
 REV :=		1
 
 SOURCE :=	http://www.openinfosecfoundation.org/download/$(NAME)-$(VERSION).tar.gz
