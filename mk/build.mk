@@ -131,7 +131,11 @@ $(WRKDIR)/patch_done:
 patch: extract $(WRKDIR)/patch_done
 
 $(WRKDIR)/configure_done:
+ifdef configure
+	@$(configure)
+else
 	@cd $(WRKSRC); $(EXPORTS) /bin/sh $(MKPATH)/build.sh configure
+endif
 ifdef OPTS
 	@echo "Caching OPTS to ./options."
 	@echo "OPTS=$(OPTS)" > $(CURDIR)/options
@@ -144,8 +148,11 @@ configure: patch $(WRKDIR)/configure_done
 
 $(WRKDIR)/build_done:
 	@echo "Building $(NAME)..."
-	$(if $(build),$(build),\
-		cd $(WRKSRC); $(EXPORTS) /bin/sh $(MKPATH)/build.sh build)
+ifdef build
+	@$(build)
+else
+	cd $(WRKSRC); $(EXPORTS) /bin/sh $(MKPATH)/build.sh build
+endif
 	@touch $@
 
 build: check-deps install-deps configure $(WRKDIR)/build_done
