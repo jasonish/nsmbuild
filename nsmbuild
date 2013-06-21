@@ -47,13 +47,11 @@ def sudo(func):
 def unlink(nsmroot, package):
     """ Unlink package from nsmroot. """
 
-    # If the package name has version info in it, discard.  For
-    # unlinking we are only interested in the name of the package.
-    package = package.split("/")[0]
     package_dir = os.path.join(package_root, package)
     if not os.path.exists(package_dir):
         print("Package %s is not installed." % (package))
         return 1
+    package_dir = os.path.realpath(package_dir)
 
     print("Unlinking package %s." % (package))
 
@@ -99,7 +97,8 @@ def link(nsmroot, package):
         print("Package %s is not installed." % (package))
         return 1
 
-    # Unlink first.
+    # Unlink first.  We call unlink with just the package name as we
+    # don't care which page we are unlinking.
     unlink(nsmroot, package.split("/", 1)[0])
 
     print("Linking package %s." % (package))
@@ -107,7 +106,7 @@ def link(nsmroot, package):
     # Track the files that are linked.
     linked = []
 
-    package_dir = os.path.join(package_root, package)
+    package_dir = os.path.realpath(os.path.join(package_root, package))
     for dirpath, dirnames, filenames in os.walk(package_dir):
         if ".nolink" in filenames:
             dirnames[:] = []

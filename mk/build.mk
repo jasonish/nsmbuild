@@ -186,7 +186,7 @@ uninstall: unlink
 	fi
 
 unlink:
-	@$(SUDO) python $(TOPDIR)/nsmbuild -v unlink $(NAME)
+	@$(SUDO) python $(TOPDIR)/nsmbuild -v unlink $(NAME)/$(VERSION)
 
 link:
 	@$(SUDO) python $(TOPDIR)/nsmbuild -v link $(NAME)/$(VERSION)
