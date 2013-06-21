@@ -11,5 +11,6 @@ SYS_DEPENDS +=	libnfnetlink-devel \
 		kernel-headers \
 		autoconf \
 		automake \
-		libtool
+		libtool \
+		patch
 endif

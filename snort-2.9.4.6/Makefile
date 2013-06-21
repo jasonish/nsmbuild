@@ -10,7 +10,9 @@ include ../mk/build.mk
 DEPENDS +=	daq
 
 ifeq ($(call is_dist,fedora redhat centos),yes)
-SYS_DEPENDS +=	libdnet-devel
+SYS_DEPENDS +=	libdnet-devel \
+		pcre-devel \
+		zlib-devel
 endif
 
 DAQ_VERSION := 2.0.0
