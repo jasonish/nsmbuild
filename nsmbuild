@@ -76,11 +76,13 @@ def unlink(nsmroot, package):
                     dirs.add(os.path.dirname(filename))
 
     # Prune any directories that are now empty.
-    for dir in dirs:
+    while dirs:
+        dir = dirs.pop()
         if not os.listdir(dir):
             if verbose:
                 print("Removing directory %s." % (dir))
             os.rmdir(dir)
+            dirs.add(os.path.dirname(dir))
 
     print("%d files unlinked." % len(unlinked))
 
