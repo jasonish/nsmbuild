@@ -19,6 +19,8 @@ ifeq ($(call is_dist,redhat centos fedora), yes)
 CONFIGURE_ARGS+=--enable-ipv6 \
 		--enable-gre \
 		--enable-mpls
+
+SYS_DEPENDS +=	libtool
 endif
 
 # +mysql
