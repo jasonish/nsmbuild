@@ -163,9 +163,6 @@ $(PREFIX): build
 	@$(SUDO) mkdir -p $@
 	@(cd $(WRKINST)$(PREFIX) && tar cf - *) | \
 		(cd $(PREFIX) && $(SUDO) tar xf -)
-ifdef SUDO
-	@$(SUDO) chown root:root $(PREFIX)
-endif
 	@$(SUDO) rm -f $(dir $(PREFIX))/$(VERSION)
 	@$(SUDO) ln -s $(VERSION)-$(REV) $(dir $(PREFIX))/$(VERSION)
 
