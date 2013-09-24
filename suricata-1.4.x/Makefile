@@ -10,8 +10,7 @@ OPTIONS =	+nfqueue \
 
 include ../mk/build.mk
 
-DEPENDS =	jansson \
-		luajit
+DEPENDS =	jansson
 
 ifneq ($(filter fedora redhat centos,$(DIST_NAME)),)
 SYS_DEPENDS +=	pcre-devel \
@@ -23,6 +22,9 @@ endif
 CONFIGURE_ARGS += --prefix=$(PREFIX)
 
 # Enable luajit.
+# - So far not working on Mac.
+ifeq ($(filter Darwin,$(UNAME_SYSTEM)),)
+DEPENDS += luajit
 LUAJIT_VERSION = 2.0.0
 LUAJIT_ROOT = $(PACKAGEROOT)/luajit/2.0.0
 LUAJIT_INC = $(LUAJIT_ROOT)/include/luajit-2.0
@@ -31,6 +33,7 @@ CONFIGURE_ARGS += --enable-luajit \
 	--with-libluajit-includes=$(LUAJIT_INC) \
 	--with-libluajit-libraries=$(LUAJIT_LIB)
 LDFLAGS += -Wl,-rpath -Wl,$(LUAJIT_LIB)
+endif
 
 # Jansson
 JANSSON_VERSION = 2.4
