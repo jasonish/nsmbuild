@@ -12,6 +12,13 @@ clean:
 	@rm -f .config-* mk/config-*
 	@find . -name \*~ -print0 | xargs -0 rm -f
 
+# Target to run "make fetch" in each package directory to make sure we
+# have all the distfiles in our cache.
+fetch:
+	@for d in $(SUBDIRS); do \
+		make -C $$d fetch; \
+	done
+
 show-root:
 	@echo $(NSMROOT)
 
