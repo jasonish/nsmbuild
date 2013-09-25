@@ -23,6 +23,11 @@ if [[ -e /etc/redhat-release ]]; then
 	    DIST_REL="18"
 	    echo "export IS_FEDORA := yes"
 	    ;;
+	"Fedora release 19"*)
+	    DIST_NAME="fedora"
+	    DIST_REL="19"
+	    echo "export IS_FEDORA := yes"
+	    ;;
     esac
 fi
 
