@@ -33,6 +33,25 @@ def get_latest_version(package_name):
     elif len(versions) == 1:
         return versions[0]
 
+def get_installed_packages(nsmroot):
+    """Get a list of available packages.
+
+    Depends on the global variable progdir, the directory where
+    nsmbuild is found which is also the top level directory of the
+    nsmbuild source.
+    """
+    installed = []
+    for package in os.listdir("%s/packages" % (nsmroot)):
+        for version in os.listdir("%s/packages/%s" % (nsmroot, package)):
+            installed.append("%s-%s" % (package, version))
+    return installed
+
+def get_available_packages(nsmroot):
+    available = subprocess.Popen(
+        "gmake -s -C %s list" % (progdir), shell=True,
+        stdout=subprocess.PIPE).communicate()[0].strip().split("\n")
+    return available
+
 def sudo(func):
     """ Decorator function to re-exec this program using sudo with the
     same arguments. """
@@ -125,6 +144,33 @@ def link(nsmroot, package):
 
     print("%d files linked." % len(linked))
 
+def command_list(nsmroot, args):
+    """ Command to list all packages, installed and available. """
+
+    # Get the list of installed packages.
+    installed = get_installed_packages(nsmroot)
+
+    # Get the list of available packages.
+    available = get_available_packages(nsmroot)
+
+    # Create a set of all the packages.
+    all_packages = set(installed + available)
+
+    for package in sorted(all_packages):
+        info = []
+
+        if package in installed:
+            info.append("installed")
+            
+            # An installed package may be obsolete if its no longer
+            # available.
+            if not package in available:
+                info.append("obsolete")
+        else:
+            info.append("available")
+
+        print("%s (%s)" % (package, ", ".join(info)))
+
 def usage(file=sys.stderr):
     print("""
 usage: %(progname)s <command> [options]
@@ -133,7 +179,7 @@ Commands:
 
   link <package>          Link a package into the NSMROOT.
   unlink <package>        Unlink a package from NSMROOT.
-
+  list                    List all packages (installed and available).
 """ % {"progname": sys.argv[0],
        })
 
@@ -142,6 +188,7 @@ def main():
     global verbose
     global nsmroot
     global package_root
+    global progdir
 
     try:
         opts, args = getopt.getopt(
@@ -164,16 +211,25 @@ def main():
         # Do not use subprocess.check_output here, it doesn't exist in
         # Python 2.6 (ie: CentOS/RHEL 6).
         nsmroot = subprocess.Popen(
-            "make -s -C %s show-root" % (progdir), shell=True,
+            "gmake -s -C %s show-root" % (progdir), shell=True,
             stdout=subprocess.PIPE).communicate()[0].strip()
     else:
         nsmroot = os.path.dirname(progdir)
     package_root = os.path.join(nsmroot, "packages")
 
+    if not args:
+        usage(file=sys.stdout)
+        return 0
     if args:
         if args[0] == "link":
             link(nsmroot, args[1])
         elif args[0] == "unlink":
             return unlink(nsmroot, args[1])
+        elif args[0] == "list":
+            return command_list(nsmroot, args[1:])
+        else:
+            print("\nERROR: Unknown command: %s" % (args[0]))
+            usage()
+            return 1
 
 sys.exit(main())

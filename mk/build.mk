@@ -34,7 +34,7 @@ WRKSRC ?=	$(WRKDIR)/$(NAME)-$(VERSION)
 WRKINST :=	$(WRKDIR)/fakeroot
 
 # Prefix for the package to use (ie: --prefix).
-PREFIX =	$(PACKAGEROOT)/$(NAME)/$(VERSION)-$(REV)
+PREFIX =	$(PACKAGEROOT)/$(NAME)/$(VERSION)
 
 # Compute the filename of the source if not explicitly provided.
 SOURCE_FILE ?=	$(notdir $(SOURCE))
@@ -163,18 +163,16 @@ $(PREFIX): build
 	@$(SUDO) mkdir -p $@
 	@(cd $(WRKINST)$(PREFIX) && tar cf - *) | \
 		(cd $(PREFIX) && $(SUDO) tar xf -)
-	@$(SUDO) rm -f $(dir $(PREFIX))/$(VERSION)
-	@$(SUDO) ln -s $(VERSION)-$(REV) $(dir $(PREFIX))/$(VERSION)
 
 install:
 	@if test -e $(PREFIX); then \
-		echo "Package $(NAME)-$(VERSION)-$(REV) already installed."; \
+		echo "Package $(NAME)-$(VERSION) already installed."; \
 	else \
 		$(MAKE) $(PREFIX); \
 	fi
 
 uninstall: unlink
-	@echo "Uninstalling $(NAME)-$(VERSION)-$(REV)..."
+	@echo "Uninstalling $(NAME)-$(VERSION)..."
 	@$(SUDO) rm -rf $(PREFIX)
 	@test -e $(dir $(PREFIX))/$(VERSION) || \
 		$(SUDO) rm -f $(dir $(PREFIX))/$(VERSION)
@@ -189,7 +187,7 @@ link:
 	@$(SUDO) python $(TOPDIR)/nsmbuild -v link $(NAME)/$(VERSION)
 
 print-package-name:
-	@echo $(NAME)-$(VERSION)-$(REV)
+	@echo $(NAME)-$(VERSION)
 
 help:
 	@echo "build (default)      Build the package."
