@@ -25,8 +25,8 @@ CONFIGURE_ARGS += --prefix=$(PREFIX)
 # - So far not working on Mac.
 ifeq ($(filter Darwin,$(UNAME_SYSTEM)),)
 DEPENDS += luajit
-LUAJIT_VERSION = 2.0.0
-LUAJIT_ROOT = $(PACKAGEROOT)/luajit/2.0.0
+LUAJIT_VERSION = 2.0.2
+LUAJIT_ROOT = $(PACKAGEROOT)/luajit/$(LUAJIT_VERSION)
 LUAJIT_INC = $(LUAJIT_ROOT)/include/luajit-2.0
 LUAJIT_LIB = $(LUAJIT_ROOT)/lib
 CONFIGURE_ARGS += --enable-luajit \
