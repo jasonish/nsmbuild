@@ -1,6 +1,6 @@
 NAME :=		suricata
 VERSION =	$(shell python $(MKPATH)/git-last-commit-date.py \
-			--default "" --prefix git.)
+			--default git --prefix git. sources/suricata)
 REV :=		1
 
 OPTIONS =	+nfqueue \
