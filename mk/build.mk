@@ -101,7 +101,9 @@ $(DISTDIR)/$(SOURCE_FILE):
 	@echo "Downloading $(SOURCE_FILE):"
 	@curl -# -L -o $(DISTDIR)/$(SOURCE_FILE) $(SOURCE)
 
-fetch: $(DISTDIR)/$(SOURCE_FILE)
+FETCH_TARGET ?=	$(DISTDIR)/$(SOURCE_FILE)
+
+fetch: $(FETCH_TARGET)
 
 clean:
 	@echo "Cleaning $(NAME)-$(VERSION)..."
@@ -117,7 +119,9 @@ $(WRKSRC): $(DISTDIR)/$(SOURCE_FILE)
 # Touch the new directory to make sure it newer than the source file.
 	@touch $@
 
-extract: $(WRKSRC)
+EXTRACT_TARGET ?= $(WRKSRC)
+
+extract: $(EXTRACT_TARGET)
 
 $(WRKDIR)/patch_done:
 	@if test -d patches; then \
