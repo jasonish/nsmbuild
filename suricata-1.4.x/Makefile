@@ -16,7 +16,8 @@ ifneq ($(filter fedora redhat centos,$(DIST_NAME)),)
 SYS_DEPENDS +=	pcre-devel \
 		libyaml-devel \
 		file-devel \
-		zlib-devel
+		zlib-devel \
+		libpcap-devel
 endif
 
 CONFIGURE_ARGS += --prefix=$(PREFIX)
