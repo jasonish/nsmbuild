@@ -21,7 +21,8 @@ SYS_DEPENDS +=	pcre-devel \
 		libyaml-devel \
 		file-devel \
 		zlib-devel \
-		libpcap-devel
+		libpcap-devel \
+		python-simplejson
 
 # For the git version...
 SYS_DEPENDS +=	libtool \
