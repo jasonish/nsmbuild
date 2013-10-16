@@ -12,12 +12,30 @@ include ../mk/build.mk
 
 DEPENDS =	jansson
 
+# Fedora, CentOS/RedHat (w/EPEL) dependencies.
 ifneq ($(filter fedora redhat centos,$(DIST_NAME)),)
 SYS_DEPENDS +=	pcre-devel \
 		libyaml-devel \
 		file-devel \
 		zlib-devel \
 		libpcap-devel
+endif
+
+# Ubuntu dependencies.
+ifeq ($(DIST_NAME),ubuntu)
+SYS_DEPENDS +=	libpcre3 \
+		libpcre3-dev \
+		build-essential \
+		libtool \
+		libpcap-dev \
+		libnet1-dev \
+		libyaml-0-2 \
+		libyaml-dev \
+		zlib1g \
+		zlib1g-dev \
+		libcap-ng-dev \
+		libcap-ng0 \
+		libmagic-dev
 endif
 
 CONFIGURE_ARGS += --prefix=$(PREFIX)

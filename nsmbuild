@@ -48,7 +48,7 @@ def get_installed_packages(nsmroot):
 
 def get_available_packages(nsmroot):
     available = subprocess.Popen(
-        "gmake -s -C %s list" % (progdir), shell=True,
+        "make -s -C %s list" % (progdir), shell=True,
         stdout=subprocess.PIPE).communicate()[0].strip().split("\n")
     return available
 
@@ -211,7 +211,7 @@ def main():
         # Do not use subprocess.check_output here, it doesn't exist in
         # Python 2.6 (ie: CentOS/RHEL 6).
         nsmroot = subprocess.Popen(
-            "gmake -s -C %s show-root" % (progdir), shell=True,
+            "make -s -C %s show-root" % (progdir), shell=True,
             stdout=subprocess.PIPE).communicate()[0].strip()
     else:
         nsmroot = os.path.dirname(progdir)

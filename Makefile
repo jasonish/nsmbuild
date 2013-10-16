@@ -1,6 +1,7 @@
 SUBDIRS =	$(notdir $(abspath $(dir $(wildcard */Makefile))))
 
 include mk/defaults.mk
+include mk/config.mk
 
 all:
 
@@ -34,3 +35,13 @@ update:
 	$(MAKE) post-update
 
 post-update:
+
+show-config:
+	@echo "UNAME_MACHINE = $(UNAME_MACHINE)"
+	@echo "UNAME_RELEASE = $(UNAME_RELEASE)"
+	@echo "UNAME_SYSTEM = $(UNAME_SYSTEM)"
+	@echo "UNAME_VERSION = $(UNAME_VERSION)"
+	@echo "DIST_NAME = $(DIST_NAME)"
+	@echo "DIST_REL = $(DIST_REL)"
+
+

@@ -29,6 +29,25 @@ SYS_DEPENDS +=	libtool \
 		autoconf
 endif
 
+# Ubuntu dependencies.
+ifeq ($(DIST_NAME),ubuntu)
+SYS_DEPENDS +=	libpcre3 \
+		libpcre3-dev \
+		build-essential \
+		libtool \
+		libpcap-dev \
+		libnet1-dev \
+		libyaml-0-2 \
+		libyaml-dev \
+		zlib1g \
+		zlib1g-dev \
+		libcap-ng-dev \
+		libcap-ng0 \
+		libmagic-dev \
+		autoconf \
+		automake
+endif
+
 CONFIGURE_ARGS += --prefix=$(PREFIX)
 
 # Enable luajit.

@@ -1,35 +1,36 @@
-# Some basic uname stuff.
-echo "UNAME_SYSTEM := $(uname -s)"
-echo "UNAME_ARCH := $(uname -m)"
+#! /bin/sh
 
 DIST_NAME="unknown"
-DIST_REL="unknown"
+DIST_REL="unkonwn"
 
-if [[ -e /etc/redhat-release ]]; then
+if test -e /etc/os-release; then
+    . /etc/os-release
+    if [ "${ID}" != "" ]; then
+	DIST_NAME=${ID}
+    fi
+    if [ "${VERSION_ID}" != "" ]; then
+	DIST_REL=${VERSION_ID}
+    fi
+elif test -e /etc/redhat-release; then
     case $(cat /etc/redhat-release) in
 	"CentOS release 6"*)
 	    DIST_NAME="centos"
 	    DIST_REL="6"
-	    echo "export IS_RHEL := yes"
-	    echo "export IS_CENTOS := yes"
 	    ;;
-	"Fedora release 17"*)
-	    DIST_NAME="fedora"
-	    DIST_REL="17"
-	    echo "export IS_FEDORA := yes"
-	    ;;
-	"Fedora release 18"*)
-	    DIST_NAME="fedora"
-	    DIST_REL="18"
-	    echo "export IS_FEDORA := yes"
-	    ;;
-	"Fedora release 19"*)
-	    DIST_NAME="fedora"
-	    DIST_REL="19"
-	    echo "export IS_FEDORA := yes"
+	Fedora*)
+	    # Fedora handled by /etc/os-release.
 	    ;;
     esac
 fi
 
-echo "DIST_NAME := ${DIST_NAME}"
-echo "DIST_REL := ${DIST_REL}"
+case "$1" in
+
+    --name)
+	echo ${DIST_NAME}
+	;;
+
+    --release)
+	echo ${DIST_REL}
+	;;
+
+esac

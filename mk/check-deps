@@ -20,9 +20,31 @@ check_rpm() {
     fi
 }
 
+check_dpkg() {
+    missing=""
+    for dep in $@; do
+	echo -n "Checking for package $dep: "
+	if ! dpkg -s $dep > /dev/null 2>&1; then
+	    echo "not found"
+	    missing="${missing} $dep"
+	else
+	    echo "found"
+	fi
+    done
+	
+    if [ "${missing}" != "" ]; then
+	echo "Please install the following packages then try again:"
+	echo "    ${missing}"
+	exit 1
+    fi
+}
+
 case ${DIST_NAME} in
     centos|redhat|fedora)
 	check_rpm $@
+	;;
+    ubuntu)
+	check_dpkg $@
 	;;
     *)
 	echo "WARNING: Unable to check system dependencies on this platform: ${DIST_NAME}"

@@ -31,7 +31,7 @@ ifeq ($(call has_opt,+mysql),yes)
   # RedHat/CentOS/Fedora
   ifeq ($(call is_dist,redhat centos fedora),yes)
     SYS_DEPENDS += mysql-libs mysql-devel
-    ifeq ($(UNAME_ARCH),x86_64)
+    ifeq ($(UNAME_MACHINE),x86_64)
       CONFIGURE_ARGS+=--with-mysql-libraries=/usr/lib64/mysql
     endif
   endif

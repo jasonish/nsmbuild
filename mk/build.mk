@@ -5,15 +5,11 @@ NSMBUILDROOT :=	$(TOPDIR)
 # Directory where the build infrastructure makefiles and scripts live.
 MKPATH :=	$(TOPDIR)/mk
 
+# Pull in system configuration parameters.
+include $(MKPATH)/config.mk
+
 # Pull in default settings that can be overridden by user settings.
 include $(MKPATH)/defaults.mk
-
-# Pull in dynamic configuration.
-define newline
-
-
-endef
-$(eval $(subst #,$(newline),$(shell /bin/sh $(MKPATH)/config.sh | tr '\n' '#')))
 
 # Now pull in user overrides.
 -include $(TOPDIR)/local.mk
