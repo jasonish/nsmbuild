@@ -9,8 +9,8 @@ UNAME_SYSTEM :=		$(shell uname -s 2>/dev/null || echo unknown)
 UNAME_VERSION :=	$(shell uname -v 2>/dev/null || echo unknown)
 
 # Distribution information.
-DIST_NAME :=		$(shell $(MKPATH)/config.sh --name)
-DIST_REL :=		$(shell $(MKPATH)/config.sh --release)
+DIST_NAME ?=		$(shell $(MKPATH)/config.sh --name)
+DIST_REL ?=		$(shell $(MKPATH)/config.sh --release)
 
 # Deprecate these.
 ifeq ($(DIST_NAME),centos)
