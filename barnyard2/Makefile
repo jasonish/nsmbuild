@@ -15,7 +15,7 @@ include ../mk/build.mk
 CONFIGURE_ARGS += --prefix=$(PREFIX)
 
 # Extra configure options, may apply to more than just RedHat,CentOS,Fedora.
-ifeq ($(call is_dist,redhat centos fedora), yes)
+ifeq ($(call is_dist,el fedora), yes)
 CONFIGURE_ARGS+=--enable-ipv6 \
 		--enable-gre \
 		--enable-mpls
@@ -29,7 +29,7 @@ ifeq ($(call has_opt,+mysql),yes)
   CONFIGURE_ARGS += --with-mysql
 
   # RedHat/CentOS/Fedora
-  ifeq ($(call is_dist,redhat centos fedora),yes)
+  ifeq ($(call is_dist,el fedora),yes)
     SYS_DEPENDS += mysql-libs mysql-devel
     ifeq ($(UNAME_MACHINE),x86_64)
       CONFIGURE_ARGS+=--with-mysql-libraries=/usr/lib64/mysql
@@ -43,7 +43,7 @@ ifeq ($(call has_opt,+postgresql),yes)
   CONFIGURE_ARGS += --with-postgresql
 
   # RedHat/CentOS/Fedora
-  ifeq ($(call is_dist,redhat centos fedora),yes)
+  ifeq ($(call is_dist,el fedora),yes)
     SYS_DEPENDS += postgresql-libs
   endif
 endif

@@ -40,7 +40,7 @@ check_dpkg() {
 }
 
 case ${DIST_NAME} in
-    centos|redhat|fedora)
+    el|fedora)
 	check_rpm $@
 	;;
     ubuntu)

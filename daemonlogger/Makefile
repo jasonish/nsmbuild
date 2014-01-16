@@ -7,7 +7,7 @@ SOURCE_FILE :=	$(NAME)-$(VERSION).tar.gz
 
 include ../mk/build.mk
 
-ifeq ($(call is_dist,centos redhat fedora),yes)
+ifeq ($(call is_dist,el fedora),yes)
 SYS_DEPENDS +=	libpcap-devel \
 		libdnet-devel
 endif

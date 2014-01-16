@@ -18,7 +18,7 @@ endef
 include ../mk/build.mk
 
 # Fedora, CentOS and RedHat share some common dependencies.
-ifneq ($(filter fedora redhat centos,$(DIST_NAME)),)
+ifneq ($(filter fedora el,$(DIST_NAME)),)
 SYS_DEPENDS =	flex \
 		bison \
 		libpcap-devel \
@@ -31,7 +31,7 @@ SYS_DEPENDS +=	libnetfilter_queue-devel
 endif
 
 # We provide libnetfilter_queue for CentOS/RedHat.
-ifneq ($(filter redhat centos,$(DIST_NAME)),)
+ifneq ($(filter el,$(DIST_NAME)),)
 DEPENDS +=	libnetfilter_queue
 CPPFLAGS +=	-I$(PACKAGEROOT)/libnetfilter_queue/1.0.0/include
 LDFLAGS +=	-L$(PACKAGEROOT)/libnetfilter_queue/1.0.0/lib

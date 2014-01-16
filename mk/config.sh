@@ -13,12 +13,9 @@ if test -e /etc/os-release; then
     fi
 elif test -e /etc/redhat-release; then
     case $(cat /etc/redhat-release) in
-	"CentOS release 6"*)
-	    DIST_NAME="centos"
+	*"release 6"*)
+	    DIST_NAME="el"
 	    DIST_REL="6"
-	    ;;
-	Fedora*)
-	    # Fedora handled by /etc/os-release.
 	    ;;
     esac
 fi

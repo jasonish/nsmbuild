@@ -13,7 +13,7 @@ include ../mk/build.mk
 DEPENDS =	jansson
 
 # Fedora, CentOS/RedHat (w/EPEL) dependencies.
-ifneq ($(filter fedora redhat centos,$(DIST_NAME)),)
+ifneq ($(filter fedora el,$(DIST_NAME)),)
 SYS_DEPENDS +=	pcre-devel \
 		libyaml-devel \
 		file-devel \
@@ -74,7 +74,7 @@ ifeq ($(call has_opt,+nfqueue),yes)
 
   CONFIGURE_ARGS+=--enable-nfqueue
 
-  ifeq ($(call is_dist,redhat centos),yes)
+  ifeq ($(call is_dist,el),yes)
     DEPENDS += libnetfilter_queue
     CONFIGURE_ARGS+=--with-libnetfilter_queue-includes=$(PACKAGEROOT)/libnetfilter_queue/1.0.0/include
     CONFIGURE_ARGS+=--with-libnetfilter_queue-libraries=$(PACKAGEROOT)/libnetfilter_queue/1.0.0/lib

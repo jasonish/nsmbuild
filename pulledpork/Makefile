@@ -15,7 +15,7 @@ SYS_DEPENDS +=	perl-libwww-perl \
 		perl-Switch \
 		perl-LWP-Protocol-https
 endif
-ifeq ($(call is_dist,redhat centos),yes)
+ifeq ($(call is_dist,el),yes)
 SYS_DEPENDS +=	perl-libwww-perl \
 		perl-Crypt-SSLeay \
 		perl-Archive-Tar

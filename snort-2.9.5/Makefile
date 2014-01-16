@@ -21,7 +21,7 @@ include ../mk/build.mk
 
 DEPENDS +=	daq
 
-ifeq ($(call is_dist,fedora redhat centos),yes)
+ifeq ($(call is_dist,fedora el),yes)
 SYS_DEPENDS +=	libdnet-devel \
 		pcre-devel \
 		zlib-devel
@@ -32,6 +32,6 @@ DAQ_ROOT := $(PACKAGEROOT)/daq/$(DAQ_VERSION)
 
 # On CentOS, RedHat we need to tell how to link against
 # libnetfilter_queue.
-ifneq ($(filter redhat centos,$(DIST_NAME)),)
+ifneq ($(filter el,$(DIST_NAME)),)
 LDFLAGS += -L$(PACKAGEROOT)/libnetfilter_queue/1.0.0/lib
 endif
