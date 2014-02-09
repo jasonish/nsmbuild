@@ -49,7 +49,8 @@ SYS_DEPENDS +=	libpcre3 \
 		automake
 endif
 
-CONFIGURE_ARGS += --prefix=$(PREFIX)
+CONFIGURE_ARGS +=	--prefix=$(PREFIX) \
+			--enable-unix-socket
 
 # Enable luajit.
 # - So far not working on Mac.
