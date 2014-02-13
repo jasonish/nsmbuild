@@ -5,7 +5,8 @@ REV :=		1
 
 OPTIONS =	+nfqueue \
 		+profiling \
-		+debug
+		+debug \
+		+pfring
 
 WRKSRC =	$(WRKDIR)/$(NAME)
 
@@ -93,6 +94,17 @@ ifeq ($(call has_opt,+nfqueue),yes)
 
   ifeq ($(call is_dist,fedora),yes)
     SYS_DEPENDS += libnfnetlink-devel
+  endif
+
+endif
+
+# +pfring
+ifeq ($(call has_opt,+pfring),yes)
+
+  CONFIGURE_ARGS += --enable-pfring
+
+  ifeq ($(call is_dist,el),yes)
+    LIBS += -lnuma
   endif
 
 endif
