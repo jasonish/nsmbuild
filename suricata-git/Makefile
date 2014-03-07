@@ -6,7 +6,8 @@ REV :=		1
 OPTIONS =	+nfqueue \
 		+profiling \
 		+debug \
-		+pfring
+		+pfring \
+		+dag
 
 WRKSRC =	$(WRKDIR)/$(NAME)
 
@@ -119,6 +120,17 @@ endif
 # +debug
 ifeq ($(call has_opt,+profiling),yes)
 CONFIGURE_ARGS += --enable-debug
+endif
+
+# +dag
+ifeq ($(filter +dag,$(OPTS)),+dag)
+CONFIGURE_ARGS += --enable-dag
+ifdef DAG_INCLUDES
+CONFIGURE_ARGS += --with-dag-includes=$(DAG_INCLUDES)
+endif
+ifdef DAG_LIBRARIES
+CONFIGURE_ARGS += --with-dag-libraries=$(DAG_LIBRARIES)
+endif
 endif
 
 SURICATA_GIT =	https://github.com/inliniac/suricata.git
