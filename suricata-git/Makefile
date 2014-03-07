@@ -23,7 +23,9 @@ SYS_DEPENDS +=	pcre-devel \
 		file-devel \
 		zlib-devel \
 		libpcap-devel \
-		python-simplejson
+		python-simplejson \
+		nss-devel \
+		nspr-devel
 
 # For the git version...
 SYS_DEPENDS +=	libtool \
