@@ -43,7 +43,7 @@ case ${DIST_NAME} in
     el|fedora)
 	check_rpm $@
 	;;
-    ubuntu)
+    debian|ubuntu)
 	check_dpkg $@
 	;;
     *)

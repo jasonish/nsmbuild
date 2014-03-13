@@ -29,6 +29,10 @@ SYS_DEPENDS +=	libdnet-devel \
 		zlib-devel
 endif
 
+ifeq ($(call is_dist,debian ubuntu),yes)
+SYS_DEPENDS +=	libdumbnet-dev
+endif
+
 DAQ_ROOT := $(PACKAGEROOT)/daq/$(DAQ_VERSION)
 
 # On CentOS, RedHat we need to tell how to link against
