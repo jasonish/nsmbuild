@@ -71,7 +71,12 @@ class BuildModule(object):
         while True:
             m = re.search("#{(.*?)}", buf)
             if m:
-                attr = getattr(self, m.group(1))
+                name = m.group(1)
+                if hasattr(self, name):
+                    attr = getattr(self, name)
+                else:
+                    print("warning: build has no attribute named %s" % (name))
+                    attr = ""
                 if type(attr) == type([]):
                     attr = " ".join(attr)
                 buf = buf.replace("#{%s}" % m.group(1), attr)

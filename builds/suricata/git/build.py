@@ -46,7 +46,8 @@ def init(build):
         "--with-libluajit-includes=%s/include/luajit-2.0" % luajit.prefix,
         "--with-libluajit-libraries=%s/lib" % luajit.prefix
     ]
-    build.ldflags = "-Wl,-rpath=%s/lib" % (luajit.prefix)
+    if build.config["uname-sysname"] not in ["Darwin"]:
+        build.ldflags = "-Wl,-rpath=%s/lib" % (luajit.prefix)
 
     if "+nfqueue" in build.args:
         if build.config["uname-sysname"] != "Linux":
