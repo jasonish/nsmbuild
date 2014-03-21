@@ -45,6 +45,8 @@ class FetchCommand(AbstractCommand):
     def run(self, args=None):
         if not self.build:
             self.build = BuildModule.load_by_name(self.config, args.pop(0))
+        if hasattr(self.build.module, "fetch"):
+            return self.build.module.fetch(self.build)
         source = self.build.source()
         if not self.exists(source["filename"]):
             self.fetch(source)
@@ -71,6 +73,10 @@ class ExtractCommand(AbstractCommand):
             return
 
         FetchCommand(self.config, self.build).run()
+
+        if hasattr(self.build.module, "extract"):
+            return self.build.module.extract(self.build)
+
         if not os.path.exists(self.build.workdir):
             os.makedirs(self.build.workdir)
         self.extract(self.build.source()["filename"])
@@ -244,18 +250,25 @@ class UninstallCommand(AbstractCommand):
 class LinkCommand(AbstractCommand):
 
     def run(self, args=None):
-        if not self.build:
-            self.build = BuildModule.load_by_name(self.config, args.pop(0))
+        
+        build_name = args[0]
+        name, version = build_name.split("/")
+        prefix = os.path.join(
+            self.config["install-root"], "installed", build_name)
 
-        InstallCommand(self.config, self.build).run()
+        if not os.path.exists(prefix):
+            print("error: build %s is not installed." % (build_name))
 
-        print("Linking %s." % (self.build.build_name))
-        for dirpath, dirnames, filenames in os.walk(self.build.prefix):
+        # Unlink any other version of this build.
+        UnlinkCommand(self.config).run([build_name])
+
+        print("Linking %s." % (build_name))
+        for dirpath, dirnames, filenames in os.walk(prefix):
             for filename in filenames:
                 src = os.path.join(dirpath, filename)
                 dest = os.path.join(
                     self.config["install-root"],
-                    src[len(self.build.prefix) + 1:])
+                    src[len(prefix) + 1:])
                 self.create_link(src, dest)
 
     def create_link(self, src, dest):

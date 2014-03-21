@@ -22,18 +22,15 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from __future__ import print_function
+
 import subprocess
+import time
 
-def check_rpm(package):
-    rc = subprocess.call(
-        ["rpm", "-q", package], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    return True if rc == 0 else False
-
-def check_dpkg(package):
-    pass
-
-def check(config, package):
-    if config["dist-name"] in ["el", "fedora"]:
-        return check_rpm(package)
-    elif config["dist-name"] in ["debian", "ubuntu"]:
-        return check_dpkg(package)
+def get_last_commit_date(repo):
+    git = subprocess.Popen(
+        ["git", "log", "-1", "--format=%ct"],
+        stdout=subprocess.PIPE, cwd=repo)
+    stdout, stderr = git.communicate()
+    lt = time.localtime(int(stdout.strip()))
+    return "%s" % (time.strftime("%Y%m%d%H%M%S", lt))

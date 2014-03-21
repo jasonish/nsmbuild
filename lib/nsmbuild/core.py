@@ -29,10 +29,12 @@ class BuildModule(object):
         self.srcdir = os.path.join(
             self.workdir, "%s-%s" % (self.name, self.version))
 
-        self.prefix = os.path.join(
-            self.config["install-root"], "installed", self.name, self.version)
-
         self.module.init(self)
+
+    @property
+    def prefix(self):
+        return os.path.join(
+            self.config["install-root"], "installed", self.name, self.version)
 
     @classmethod
     def load_by_name(cls, config, name, *args):
@@ -65,7 +67,7 @@ class BuildModule(object):
     def fakeroot(self):
         return os.path.join(self.workdir, "fakeroot")
 
-    def call(self, buf):
+    def call(self, buf, cwd=None):
         while True:
             m = re.search("#{(.*?)}", buf)
             if m:
@@ -78,7 +80,9 @@ class BuildModule(object):
         env = {
             "PATH": ":".join(self.path) + ":" + os.environ["PATH"]
         }
-        assert subprocess.call(buf, shell=True, cwd=self.srcdir, env=env) == 0
+        if not cwd:
+            cwd = self.srcdir
+        assert subprocess.call(buf, shell=True, cwd=cwd, env=env) == 0
 
     def configure(self, args):
         self.module.configure(self)
