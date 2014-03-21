@@ -12,8 +12,6 @@ class BuildModule(object):
         self.name = module.name
         self.version = module.version
 
-        self.build_name = "%s/%s" % (self.name, self.version)
-
         self.deps = []
         self.sysdeps = []
 
@@ -31,11 +29,6 @@ class BuildModule(object):
 
         self.module.init(self)
 
-    @property
-    def prefix(self):
-        return os.path.join(
-            self.config["install-root"], "installed", self.name, self.version)
-
     @classmethod
     def load_by_name(cls, config, name, *args):
         path = os.path.join(config["root-dir"], "builds", name, "build.py")
@@ -43,6 +36,15 @@ class BuildModule(object):
             name = "-".join(os.path.splitext(path)[0].split("/")[1:]).replace(
                 ".", "-")
             return cls(config, imp.load_source(name, path), *args)
+
+    @property
+    def build_name(self):
+        return "%s/%s" % (self.name, self.version)
+
+    @property
+    def prefix(self):
+        return os.path.join(
+            self.config["install-root"], "installed", self.name, self.version)
 
     @property
     def options(self):
