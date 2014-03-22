@@ -30,9 +30,15 @@ import shutil
 import getopt
 import json
 import textwrap
+import subprocess
 
 from nsmbuild.core import *
 from nsmbuild import sysdep
+
+def system(command, use_sudo=False):
+    args = ["sudo"] if use_sudo else []
+    args += ["/bin/sh", "-c", command]
+    subprocess.call(args)
 
 class AbstractCommand(object):
 
@@ -222,7 +228,12 @@ class InstallCommand(AbstractCommand):
 
         BuildCommand(self.config, self.build).run()
         print("Installing %s." % (self.build.build_name))
-        self.build.install(self.force)
+        system("""
+mkdir -p %(prefix)s && \
+    (cd %(fakeroot)s/%(prefix)s && tar cf - *) | \
+    (cd %(prefix)s && tar xf -)""" % {
+        "prefix": self.build.prefix,
+        "fakeroot": self.build.fakeroot}, use_sudo=True)
 
 class UninstallCommand(AbstractCommand):
 
@@ -242,10 +253,11 @@ class UninstallCommand(AbstractCommand):
         UnlinkCommand(self.config, self.build).run([self.name])
 
         print("Uninstalling %s." % (self.name))
-        shutil.rmtree(self.prefix)
+        assert self.prefix.startswith(self.config["install-root"])
+        system("rm -rf %s" % (self.prefix), use_sudo=self.config["use-sudo"])
         parent = os.path.dirname(self.prefix)
         if not os.listdir(parent):
-            os.rmdir(parent)
+            system("rmdir %s" % (parent), use_sudo=self.config["use-sudo"])
 
 class LinkCommand(AbstractCommand):
 
@@ -258,6 +270,7 @@ class LinkCommand(AbstractCommand):
 
         if not os.path.exists(prefix):
             print("error: build %s is not installed." % (build_name))
+            return 1
 
         # Unlink any other version of this build.
         UnlinkCommand(self.config).run([build_name])
@@ -275,10 +288,10 @@ class LinkCommand(AbstractCommand):
         dest_directory = os.path.dirname(dest)
         if not os.path.exists(dest_directory):
             print("Creating directory %s." % (dest_directory))
-            os.makedirs(dest_directory)
+            system("mkdir -p %s" % (dest_directory), self.config["use-sudo"])
         if os.path.exists(dest):
-            os.unlink(dest) 
-        os.symlink(src, dest)
+            system("rm -f %s" % (dest), self.config["use-sudo"])
+        system("ln -s %s %s" % (src, dest), self.config["use-sudo"])
 
 class UnlinkCommand(AbstractCommand):
     """Unlink is done by name, just in case the build module for an
@@ -315,7 +328,9 @@ class UnlinkCommand(AbstractCommand):
                 path = os.path.join(dirpath, filename)
                 if os.path.islink(path):
                     if os.readlink(path).startswith(self.prefix):
-                        os.unlink(path)
+                        system(
+                            "rm -f %s" % (path),
+                            use_sudo=self.config["use-sudo"])
                         unlinked.append(path)
 
         # Now prune any empty directories where a link was removed.
@@ -324,7 +339,8 @@ class UnlinkCommand(AbstractCommand):
             directory = os.path.dirname(filename)
             if os.path.exists(directory) and not os.listdir(directory):
                 print("Removing directory %s." % (directory))
-                os.rmdir(directory)
+                system(
+                    "rmdir %s" % (directory), use_sudo=self.config["use-sudo"])
                 unlinked.append(directory)
 
 class InfoCommand(AbstractCommand):
@@ -433,14 +449,22 @@ class ConfigCommand(AbstractCommand):
 
     usage = """
 usage: %(progname)s config
-   or: %(progname)s config set <name> <value>
-   or: %(progname)s config unset <name>
+   or: %(progname)s config install-root <dir>
+   or: %(progname)s config --unset install-root
+   or: %(progname)s config use-sudo <true|false>
 """ % {"progname": sys.argv[0]}
+
+    names = [
+        "install-root",
+        "use-sudo",
+    ]
 
     def run(self, args=None):
 
+        self.opt_unset = False
+
         try:
-            opts, args = getopt.getopt(args, "h", [])
+            opts, args = getopt.getopt(args, "h", ["unset"])
         except getopt.GetoptError as err:
             print("error: %s" % (err), file=sys.stderr)
             print(self.usage, file=sys.stderr)
@@ -449,6 +473,8 @@ usage: %(progname)s config
             if o in ["-h"]:
                 print(self.usage)
                 return 0
+            elif o in ["--unset"]:
+                self.opt_unset = True
 
         self.config_filename = os.path.join(
             self.config["root-dir"], "config.json")
@@ -460,20 +486,28 @@ usage: %(progname)s config
         if not args:
             return self.show_config()
 
-        try:
-            command = args.pop(0)
-            getattr(self, command)(*args)
-            json.dump(self.local_config, open(self.config_filename, "wb"))
-        except IndexError:
-            print(self.usage, file=sys.stderr)
-            return 1
+        if self.opt_unset:
+            self.unset(args[0])
+        else:
+            self.set(args[0], args[1])
 
-    def set(self, *args):
-        name, value = args[0], args[1]
+        json.dump(self.local_config, open(self.config_filename, "wb"))
+
+    def set(self, name, value):
+        if name not in self.names:
+            raise Exception(
+                "error: unknown configuration parameter: %s" % (name))
+            
+        if name in ["use-sudo"]:
+            if value in ["true"]:
+                value = True
+            elif value in ["false"]:
+                value = False
+            else:
+                raise Exception("Invalid value for %s: %s" % (name, value))
         self.local_config[name] = value
 
-    def unset(self, *args):
-        name = args[0]
+    def unset(self, name):
         if name in self.local_config:
             del(self.local_config[name])
 

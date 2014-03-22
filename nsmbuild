@@ -48,6 +48,8 @@ def configure():
             config["dist-name"] = "el"
             config["dist-version"] = int(m.group(1))
 
+    config["use-sudo"] = False
+
     config_filename = os.path.join(config["root-dir"], "config.json")
     if os.path.exists(config_filename):
         config.update(json.load(open(config_filename)))

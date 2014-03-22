@@ -110,14 +110,3 @@ class BuildModule(object):
 
         """
         return os.path.exists(os.path.join(self.workdir, filename))
-
-    def install(self, force=False):
-        if not force and os.path.exists(self.prefix):
-            print("%s-%s already installed." % (self.name, self.version))
-            return
-        if not os.path.exists(self.prefix):
-            os.makedirs(self.prefix)
-        self.call(
-            "(cd #{fakeroot}/#{prefix} && tar cf - *) | "
-            "(cd #{prefix} && tar xf -)")
-
