@@ -2,6 +2,7 @@ import os.path
 import subprocess
 import re
 import imp
+import uuid
 
 class BuildModule(object):
 
@@ -18,7 +19,7 @@ class BuildModule(object):
         self.configure_args = []
         self.path = []
 
-        self.builddir = os.path.dirname(self.module.__file__)
+        self.builddir = os.path.dirname(os.path.abspath(self.module.__file__))
         self.patchdir = os.path.join(self.builddir, "patches")
 
         self.workdir = os.path.abspath(
@@ -31,11 +32,11 @@ class BuildModule(object):
 
     @classmethod
     def load_by_name(cls, config, name, *args):
-        path = os.path.join(config["root-dir"], "builds", name, "build.py")
-        if os.path.exists(path):
-            name = "-".join(os.path.splitext(path)[0].split("/")[1:]).replace(
-                ".", "-")
-            return cls(config, imp.load_source(name, path), *args)
+        if name == ".":
+            path = "./build.py"
+        else:
+            path = os.path.join(config["root-dir"], "builds", name, "build.py")
+        return cls(config, imp.load_source(str(uuid.uuid4()), path), *args)
 
     @property
     def build_name(self):

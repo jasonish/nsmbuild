@@ -197,7 +197,7 @@ class BuildCommand(AbstractCommand):
     def run(self, args=None):
         if not self.build:
             self.build = BuildModule.load_by_name(
-                self.config, args.pop(0), args)
+                self.config, args[0], args[1:])
         if self.build.exists("build_done"):
             return
         ConfigureCommand(self.config, self.build).run()
