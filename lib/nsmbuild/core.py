@@ -1,3 +1,4 @@
+import os
 import os.path
 import subprocess
 import re
@@ -27,6 +28,8 @@ class BuildModule(object):
 
         self.srcdir = os.path.join(
             self.workdir, "%s-%s" % (self.name, self.version))
+
+        self.env = os.environ.copy()
 
         self.module.init(self)
 
@@ -90,7 +93,7 @@ class BuildModule(object):
         }
         if not cwd:
             cwd = self.srcdir
-        assert subprocess.call(buf, shell=True, cwd=cwd, env=env) == 0
+        assert subprocess.call(buf, shell=True, cwd=cwd, env=self.env) == 0
 
     def configure(self, args):
         self.module.configure(self)

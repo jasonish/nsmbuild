@@ -47,7 +47,7 @@ def init(build):
         "--with-libluajit-libraries=%s/lib" % luajit.prefix
     ]
     if build.config["uname-sysname"] not in ["Darwin"]:
-        build.ldflags = "-Wl,-rpath=%s/lib" % (luajit.prefix)
+        build.env["LDFLAGS"] = "-Wl,-rpath=%s/lib" % (luajit.prefix)
 
     if "+nfqueue" in build.args:
         if build.config["uname-sysname"] != "Linux":
@@ -125,8 +125,8 @@ mkdir -p #{workdir}
 
 def configure(build):
     build.call("./autogen.sh")
-    build.call("LDFLAGS=\"#{ldflags}\" ./configure #{configure_args}")
+    build.call("./configure #{configure_args}")
 
 def build(build):
-    build.call("LDFLAGS=\"#{ldflags}\" make")
-    build.call("LDFLAGS=\"#{ldflags}\" make install DESTDIR=#{fakeroot}")
+    build.call("make")
+    build.call("make install DESTDIR=#{fakeroot}")
