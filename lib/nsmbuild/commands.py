@@ -147,7 +147,7 @@ class ConfigureCommand(AbstractCommand):
             return
 
         if not self.check_sysdeps():
-            return 1
+            raise UnsatisfiedSystemDependency()
         self.install_deps()
 
         ExtractCommand(self.config, self.build).run()
