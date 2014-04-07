@@ -195,10 +195,21 @@ class ConfigureCommand(AbstractCommand):
 class BuildCommand(AbstractCommand):
 
     def run(self, args=None):
+        self.force = False
+
+        try:
+            opts, args = getopt.getopt(args, "f")
+        except getopt.GetoptError as err:
+            print("error: %s" % (err))
+            return 1
+        for o, a in opts:
+            if o in ["-f"]:
+                self.force = True
+
         if not self.build:
             self.build = BuildModule.load_by_name(
                 self.config, args[0], args[1:])
-        if self.build.exists("build_done"):
+        if not self.force and self.build.exists("build_done"):
             return
         ConfigureCommand(self.config, self.build).run()
         self.build.build()
@@ -228,7 +239,11 @@ class InstallCommand(AbstractCommand):
 
         BuildCommand(self.config, self.build).run()
         print("Installing %s." % (self.build.build_name))
-        system("""
+        if not os.path.exists("%s/%s" % (
+                self.build.fakeroot, self.build.prefix)):
+            print("error: package not ready to be installed")
+        else:
+            system("""
 mkdir -p %(prefix)s && \
     (cd %(fakeroot)s/%(prefix)s && tar cf - *) | \
     (cd %(prefix)s && tar xf -)""" % {
@@ -241,6 +256,10 @@ class UninstallCommand(AbstractCommand):
         if self.build:
             self.name = self.build.build_name
             self.prefix = self.build.prefix
+        elif args[0] == ".":
+            build = BuildModule.load_by_name(self.config, args[0])
+            self.name = build.name
+            self.prefix = build.prefix
         else:
             self.name = args[0]
             self.prefix = os.path.join(
@@ -264,7 +283,11 @@ class LinkCommand(AbstractCommand):
     def run(self, args=None):
         
         build_name = args[0]
-        name, version = build_name.split("/")
+        
+        if build_name == ".":
+            build = BuildModule.load_by_name(self.config, args[0])
+            build_name = "%s/%s" % (build.name, build.version)
+
         prefix = os.path.join(
             self.config["install-root"], "installed", build_name)
 

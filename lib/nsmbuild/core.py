@@ -32,6 +32,9 @@ import uuid
 class UnsatisfiedSystemDependency(Exception):
     pass
 
+class BuildModuleNotFound(Exception):
+    pass
+
 class BuildModule(object):
 
     def __init__(self, config, module, args=None):
@@ -58,7 +61,10 @@ class BuildModule(object):
 
         self.env = os.environ.copy()
 
-        self.module.init(self)
+        if hasattr(self.module, "init"):
+            self.module.init(self)
+        else:
+            print("warning: build module has no init method")
 
     @classmethod
     def load_by_name(cls, config, name, *args):
@@ -66,6 +72,8 @@ class BuildModule(object):
             path = "./build.py"
         else:
             path = os.path.join(config["root-dir"], "builds", name, "build.py")
+        if not os.path.exists(path):
+            raise BuildModuleNotFound(name)
         return cls(config, imp.load_source(str(uuid.uuid4()), path), *args)
 
     @property

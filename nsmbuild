@@ -115,6 +115,10 @@ def main():
         except UnsatisfiedSystemDependency as err:
             # Error already logged.
             return 1
+        except BuildModuleNotFound as err:
+            print("error: no build module found for %s" % (err),
+                  file=sys.stderr)
+            return 1
     else:
         print("error: unknown command: %s" % (command), file=sys.stderr)
         usage(file=sys.stderr)
