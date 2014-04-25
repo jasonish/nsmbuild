@@ -123,9 +123,6 @@ class BuildModule(object):
                 buf = buf.replace("#{%s}" % m.group(1), attr)
             else:
                 break
-        env = {
-            "PATH": ":".join(self.path) + ":" + os.environ["PATH"]
-        }
         if not cwd:
             cwd = self.srcdir
         assert subprocess.call(buf, shell=True, cwd=cwd, env=self.env) == 0

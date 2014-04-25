@@ -1,3 +1,5 @@
+import os
+
 from nsmbuild.core import BuildModule
 
 name = "snort"
@@ -23,8 +25,7 @@ def init(build):
         "--with-daq-includes=%s/include" % (daq.prefix),
         "--with-daq-libraries=%s/lib" % (daq.prefix),
     ]
-
-    build.path.append("%s/bin" % (daq.prefix))
+    build.env["PATH"] = "%s/bin:%s" % (daq.prefix, build.env["PATH"])
 
 def configure(build):
     build.call("./configure #{configure_args}")
