@@ -9,8 +9,16 @@ it easy to keep multiple versions of a package installed. Package
 binaries can be accessed directly in their prefix, or the may be
 'linked' into the nsmbuild root for easier access.
 
-## Example: Installing Suricata-1.4.7
+## Example: Installing Suricata 2.0
 
-* ./nsmbuild install suricata-1.4.7
-* ./nsmbuild link suricata-1.4.7
+* ./nsmbuild install suricata/2.0
+* ./nsmbuild link suricata/2.0
 * ./bin/suricata -V
+* ./nsmbuild uninstall suricata/2.0
+
+## Example: Installing Snort 2.9.6.0
+
+* ./nsmbuild install snort/2.9.6.0
+* ./nsmbuild link snort/2.9.6.0
+* ./bin/snort -V
+* ./nsmbuild uninstall snort/2.9.6.0
