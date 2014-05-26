@@ -219,15 +219,18 @@ class InstallCommand(AbstractCommand):
 
     def run(self, args=None):
         self.force = False
+        self.link = False
 
         try:
-            opts, args = getopt.getopt(args, "f")
+            opts, args = getopt.getopt(args, "fl", ["link"])
         except getopt.GetoptError as err:
             print("error: %s" % (err))
             return 1
         for o, a in opts:
             if o in ["-f"]:
                 self.force = True
+            elif o in ["-l", "--link"]:
+                self.link = True
 
         if not self.build:
             self.build = BuildModule.load_by_name(self.config, args.pop(0))
@@ -249,6 +252,10 @@ mkdir -p %(prefix)s && \
     (cd %(prefix)s && tar xf -)""" % {
         "prefix": self.build.prefix,
         "fakeroot": self.build.fakeroot}, use_sudo=True)
+
+        if self.link:
+            return LinkCommand(self.config).run(
+                ["%s/%s" % (self.build.name, self.build.version)])
 
 class UninstallCommand(AbstractCommand):
 
