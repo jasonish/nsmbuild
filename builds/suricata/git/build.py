@@ -29,6 +29,7 @@ def init(build):
     build.srcdir = os.path.join(build.workdir, "suricata")
 
     build.configure_args += ["--prefix=#{prefix}"]
+    build.configure_args += [arg for arg in build.args if arg.startswith("--")]
 
     # Jansson.
     jansson = BuildModule.load_by_name(build.config, "jansson/2.4")
