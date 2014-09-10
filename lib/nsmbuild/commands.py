@@ -251,7 +251,7 @@ mkdir -p %(prefix)s && \
     (cd %(fakeroot)s/%(prefix)s && tar cf - *) | \
     (cd %(prefix)s && tar xf -)""" % {
         "prefix": self.build.prefix,
-        "fakeroot": self.build.fakeroot}, use_sudo=True)
+        "fakeroot": self.build.fakeroot}, use_sudo=self.config["use-sudo"])
 
         if self.link:
             return LinkCommand(self.config).run(
