@@ -2,7 +2,7 @@ name    = "daq"
 version = "2.0.2"
 rev     = 1
 
-source = "http://www.snort.org/dl/snort-current/%(name)s-%(version)s.tar.gz"
+source = "https://www.snort.org/downloads/snort/%(name)s-%(version)s.tar.gz"
 
 def init(build):
     
