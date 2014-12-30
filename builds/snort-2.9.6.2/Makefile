@@ -6,7 +6,7 @@ SOURCE :=	http://downloads.sourceforge.net/project/snort.mirror/Snort%202.9.6.2/
 include ../nsmbuild.mk
 
 DAQ_VERSION :=	2.0.4
-DAQ_ROOT :=	$(INSTALL_ROOT)/builds/daq-$(DAQ_VERSION)
+DAQ_ROOT :=	$(INSTALL_DIR)/daq-$(DAQ_VERSION)
 PATH :=		$(DAQ_ROOT)/bin:$(PATH)
 export PATH
 

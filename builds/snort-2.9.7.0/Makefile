@@ -6,7 +6,7 @@ SOURCE :=	https://www.snort.org/downloads/snort/$(NAME)-$(VERSION).tar.gz
 include ../nsmbuild.mk
 
 DAQ_VERSION :=	2.0.4
-DAQ_ROOT :=	$(INSTALL_ROOT)/builds/daq-$(DAQ_VERSION)
+DAQ_ROOT :=	$(INSTALL_DIR)/daq-$(DAQ_VERSION)
 PATH :=		$(DAQ_ROOT)/bin:$(PATH)
 export PATH
 
