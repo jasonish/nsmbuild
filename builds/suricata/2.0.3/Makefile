@@ -1,1 +1,0 @@
-../../../lib/nsmbuild/build.mk

@@ -1,12 +1,2 @@
-/*
-
-!/lib
-/lib/*
-!/lib/nsmbuild
-
-!/README.md
-!/.gitignore
-!/builds/
-/builds/*/*/work
-
 *~
+*.tar.gz
