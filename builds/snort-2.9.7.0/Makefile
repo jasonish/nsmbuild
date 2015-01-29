@@ -12,13 +12,18 @@ export PATH
 
 DEPS :=		daq-$(DAQ_VERSION)
 
-build: fetch dep extract
+CONFIG_ARGS :=	--prefix=$(PREFIX) \
+		--with-daq-includes=$(DAQ_ROOT)/include \
+		--with-daq-libraries=$(DAQ_ROOT)/lib \
+		--enable-sourcefire
+
+ifeq (+appid,$(filter +appid,$(opts)))
+CONFIG_ARGS +=	--enable-open-appid
+endif
+
+build: dep fetch extract
 	cd $(SRCDIR) && \
-		./configure --prefix=$(PREFIX) \
-			--with-daq-includes=$(DAQ_ROOT)/include \
-			--with-daq-libraries=$(DAQ_ROOT)/lib \
-			--enable-sourcefire \
-			&& \
+		./configure $(CONFIG_ARGS) && \
 		make
 
 install:
