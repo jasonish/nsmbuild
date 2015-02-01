@@ -7,6 +7,15 @@ include ../nsmbuild.mk
 
 CONFIG_ARGS :=	--prefix=$(PREFIX)
 
+# Common system deps for Fedora, CentOS.
+ifneq ($(filter fedora centos,$(OS_NAME)),)
+SYS_DEPS :=	libyaml-devel \
+		libpcap-devel \
+		jansson-devel \
+		file-devel \
+		curl
+endif
+
 configure: dep fetch extract
 	if [ ! -e $(WORKDIR)/configure_done ]; then \
 		cd $(SRCDIR) && ./configure $(CONFIG_ARGS); \

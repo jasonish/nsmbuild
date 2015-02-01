@@ -12,6 +12,12 @@ export PATH
 
 DEPS :=		daq-$(DAQ_VERSION)
 
+# Common system deps for Fedora, CentOS.
+ifneq ($(filter fedora centos,$(OS_NAME)),)
+SYS_DEPS :=	libpcap-devel \
+		pcre-devel
+endif
+
 CONFIG_ARGS :=	--prefix=$(PREFIX) \
 		--with-daq-includes=$(DAQ_ROOT)/include \
 		--with-daq-libraries=$(DAQ_ROOT)/lib \

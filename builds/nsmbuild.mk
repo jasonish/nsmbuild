@@ -13,16 +13,26 @@ PREFIX :=	$(INSTALL_DIR)/$(NAME)-$(VERSION)
 WORKDIR ?=	$(shell pwd)/work
 SRCDIR ?=	$(WORKDIR)/$(NAME)-$(VERSION)
 
+OS_NAME :=	$(shell $(BUILD_DIR)/mk/config.sh os-name)
+OS_VER :=	$(shell $(BUILD_DIR)/mk/config.sh os-version)
+
 all: build
 
 dep:
-	@for dep in $(DEPS); do \
-		if test -e $(INSTALL_DIR)/$$dep; then \
-			echo "$$dep already installed."; \
-		else \
-			cd $(BUILD_DIR)/$$dep && $(MAKE) build install; \
-		fi \
-	done
+	@if [ "$(SYS_DEPS)" ]; then \
+		$(BUILD_DIR)/mk/check-sys-deps.sh $(SYS_DEPS) || echo failed; \
+	fi
+
+	@if [ "$(DEPS)" ]; then \
+		for dep in "$(DEPS)"; do \
+			if test -e $(INSTALL_DIR)/$$dep; then \
+	 			echo "$$dep already installed."; \
+		 	else \
+		 		cd $(BUILD_DIR)/$$dep && \
+					$(MAKE) build install; \
+	 		fi \
+		done \
+	fi
 
 fetch:
 	@if ! test -e `basename $(SOURCE)`; then \
