@@ -20,7 +20,7 @@ all: build
 
 dep:
 	@if [ "$(SYS_DEPS)" ]; then \
-		$(BUILD_DIR)/mk/check-sys-deps.sh $(SYS_DEPS) || echo failed; \
+		$(BUILD_DIR)/mk/check-sys-deps.sh $(SYS_DEPS); \
 	fi
 
 	@if [ "$(DEPS)" ]; then \
