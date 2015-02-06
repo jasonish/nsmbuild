@@ -13,7 +13,14 @@ SYS_DEPS :=	libyaml-devel \
 		libpcap-devel \
 		jansson-devel \
 		file-devel \
-		curl
+		pcre-devel \
+		curl \
+		zlib-devel \
+		nss-devel \
+		nspr-devel \
+		libnfnetlink-devel \
+		libnetfilter_queue-devel
+CONFIG_ARGS +=	--enable-nfqueue
 endif
 
 configure: dep fetch extract
