@@ -34,10 +34,15 @@ dep:
 		done \
 	fi
 
+ifeq ($(NO_FETCH),yes)
+fetch::
+else
 fetch:
+	echo $(NO_FETCH)
 	@if ! test -e `basename $(SOURCE)`; then \
 		curl -f -O -L -# $(SOURCE); \
 	fi
+endif
 
 extract:
 	if ! test -e $(SRCDIR); then \
@@ -46,5 +51,9 @@ extract:
 		tar zxvf ../`basename $(SOURCE)`; \
 	fi
 
+ifeq ($(NO_CLEAN),yes)
+clean::
+else
 clean:
 	rm -rf $(WORKDIR)
+endif
