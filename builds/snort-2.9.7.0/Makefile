@@ -23,6 +23,10 @@ CONFIG_ARGS :=	--prefix=$(PREFIX) \
 		--with-daq-libraries=$(DAQ_ROOT)/lib \
 		--enable-sourcefire
 
+ifeq (+profile,$(filter +profile,$(opts)))
+CONFIG_ARGS ++	--enable-profile
+endif
+
 ifeq (+appid,$(filter +appid,$(opts)))
 CONFIG_ARGS +=	--enable-open-appid
 endif
